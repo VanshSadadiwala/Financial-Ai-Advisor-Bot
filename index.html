@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="logo.png" alt="Company Logo" width="50">
+            <!-- <P>FI</P> --> 
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+            </ul>
+            <div class="theme-switch">
+                <label class="switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="ms-3">
+                <button class="btn btn-outline-light me-2 btn-login">Log In</button>
+                <button class="btn btn-primary">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <ul>
+        <li><i class="fas fa-chart-line"></i> Stock Analysis</li>
+        <li><i class="fas fa-chart-bar"></i> Future Forecasting</li>
+        <li><i class="fas fa-newspaper"></i> News</li>
+        <li><i class="fas fa-lightbulb"></i> Suggestions & Plans</li>
+        <li><a class="nav-link" href="chatbot.html"><i class="fas fa-robot"></i> AI Chatbot</a></li>
+    </ul>
+</div>
+
+<!-- Stock Market -->
+<!-- Updated Stock Analysis Dashboard -->
+<div id="stockDashboard" class="container-fluid d-none">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" href="#">Overview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Live Market</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Top Gainers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Top Losers</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Stock Market Dashboard</h1>
+            </div>
+            
+            <!-- Placeholder for Charts -->
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="stockChart"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <canvas id="marketTrends"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Add Stock Analysis Button in Sidebar -->
+<a id="stockAnalysisbtn" class="nav-link" href="#">Stock Analysis</a>
+
+
+
+<script src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

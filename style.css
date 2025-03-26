@@ -1,0 +1,240 @@
+/* Light Theme */
+:root {
+    --bg-color: #f8f6f9;
+    /* Soft Beige/Pinkish */
+    --sidebar-bg: #5F99AE;
+    /* Light Pink/Beige for Sidebar */
+    --text-color: #3b3b3b;
+    --accent-color: #d63384;
+    /* Soft Pink for Buttons/Highlights */
+}
+
+/* Dark Theme */
+.dark-mode {
+    --bg-color: #242435;
+    --sidebar-bg: #181826;
+    --text-color: white;
+    --accent-color: #ff4081;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Navbar */
+.navbar-custom {
+    background-color: var(--accent-color);
+    padding: 10px;
+}
+
+.navbar-custom .nav-link {
+    color: white !important;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+.navbar-custom .btn-outline-light {
+    color: white;
+    border-color: white;
+}
+
+.navbar-custom .btn-primary {
+    background-color: var(--accent-color);
+    border: none;
+}
+/* 
+.navbar-brand{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}  */
+/* 
+.navbar-brand p{
+    color:white ;
+    font-size: 30px;
+} */
+
+.btn-login {
+    color: white;
+    font-weight: bold;
+    border: 2px solid white;
+    border-radius: 50px;
+    background: transparent;
+    padding: 8px 15px;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-login:hover {
+    background: white;
+    color: #d63384;
+    /* Pink color */
+    border: 2px solid #d63384;
+}
+
+/* Theme Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.dark-mode .slider {
+    border: 1px solid white;
+    /* White border for dark mode */
+}
+
+input:checked+.slider {
+    background-color: var(--accent-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(14px);
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+        /* Keeps it fixed */
+    /* top: 60px; */
+        /* Adjust so it starts below the header */
+    left: 0;
+    width: 250px;
+    height: 100vh;
+        /* Full height minus header */
+    background-color: var(--sidebar-bg);
+    padding: 20px;
+    box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: white;
+    font-size: 16px;
+    transition: 0.3s;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sidebar ul li i {
+    margin-right: 10px; /* Space between icon & text */
+    font-size: 18px;
+}
+
+.sidebar ul li:hover {
+    background-color:#336D82;
+}
+
+.sidebar ul li.active {
+    background-color: #336D82; /* Dark background for selected item */
+    color: white;
+    font-weight: bold;
+}
+
+
+
+/* Stock market */
+/* #stock-data-container {
+    position: relative;
+    left : 270px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80vw;
+    margin-top: 20px;
+}
+
+.stock-info {
+    font-size: 16px;
+    color: #333;
+}
+
+.stock-info p {
+    margin: 5px 0;
+}
+#stock-data-container h2 {
+    color: #d63384;
+}
+
+/* Stock Dashboard Styling */
+#stockDashboard {
+    padding: 20px;
+    background-color: #121212;
+    color: white;
+    border-radius: 10px;
+}
+
+#stockDashboard h2 {
+    color: #ff4081;
+}
+
+#sidebarMenu {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    background-color: #333;
+    padding-top: 20px;
+}
+
+#sidebarMenu .nav-link {
+    color: white;
+    padding: 10px 15px;
+}
+
+#sidebarMenu .nav-link:hover {
+    background-color: #ff4081;
+    border-radius: 5px;
+}
+
+main {
+    margin-left: 260px;
+}
+
+canvas {
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+}
