@@ -167,9 +167,12 @@ user_input.pack(side=tk.LEFT, padx=10, pady=5, fill=tk.X, expand=True)
 user_input.bind("<Return>", send_message)  # Pressing Enter sends the message
 
 # Load icons (UNCHANGED)
-send_icon = PhotoImage(file="icon/send_icon.png")
-mic_icon = PhotoImage(file="icon/mic_icon.png")
-speaker_icon = PhotoImage(file="icon/speaker_icon.png")
+send_icon_path = r"D:\Project\GDG\Financial-Ai-Advisory-Bot\icon\send_icon.png"
+send_icon = PhotoImage(file=send_icon_path)
+mic_icon_path = r"D:\Project\GDG\Financial-Ai-Advisory-Bot\icon\mic_icon.png"
+mic_icon = PhotoImage(file=mic_icon_path)
+speaker_icon_path = r"D:\Project\GDG\Financial-Ai-Advisory-Bot\icon\speaker_icon.png"
+speaker_icon = PhotoImage(file=speaker_icon_path)
 
 # Buttons
 send_button = tk.Button(root, image=send_icon, command=send_message, bg="#1e1e1e", bd=0)

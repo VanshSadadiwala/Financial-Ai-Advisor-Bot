@@ -1,66 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chatbot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    /* Full-screen layout */
+    body, html {
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      width: 90%;
+      max-width: 10000px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chatbox {
+      flex: 1;
+      overflow-y: auto;
+      height: 60vh;
+    }
+
+    .input-group {
+      margin-top: auto;
+    }
+
+    /* Buttons row */
+    .buttons-container {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .icon-btn img {
+      width: 32px;
+      height: 32px;
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">AI Chatbot</a>
-            <a class="btn btn-outline-light" href="index.html">Back to Dashboard</a>
-        </div>
-    </nav>
-
-    <div class="container mt-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white text-center">
-                AI Chatbot
-            </div>
-            <div class="card-body" id="chat-container">
-                <div id="chatbox">
-                    <p class="botText"><span>Hello! How can I assist you today?</span></p>
-                </div>
-                <input id="userInput" type="text" class="form-control mt-3" placeholder="Type your message...">
-                <button onclick="sendMessage()" class="btn btn-primary mt-2">Send</button>
-            </div>
-        </div>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">AI Chatbot</a>
+      <a class="btn btn-outline-light" href="index.html">Back to Dashboard</a>
     </div>
+  </nav>
 
-    <script>
-        document.getElementById("userInput").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
+  <div class="container">
+    <div class="card">
+      <div class="card-header bg-primary text-white text-center">AI Chatbot</div>
+      <div class="card-body">
+        <div id="chatbox">
+          <p class="botText"><span>Hello! How can I assist you today?</span></p>
+        </div>
+
+        <div class="input-group">
+          <input id="userInput" type="text" class="form-control" placeholder="Type your message..." />
+          <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+        </div>
+
+        <!-- Buttons row -->
+        <div class="buttons-container">
+          <button id="uploadButton" class="btn btn-secondary">Upload</button>
+          <button id="micButton" class="icon-btn" onclick="voiceInput()">
+            <img src="icon/mic_icon.png" alt="Mic">
+          </button>
+          <button id="speakerButton" class="icon-btn" onclick="speakText()">
+            <img src="icon/speaker_icon.png" alt="Speaker">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("userInput").addEventListener("keypress", function (event) {
+      if (event.key === "Enter") sendMessage();
+    });
+
+    async function sendMessage() {
+      let userText = document.getElementById("userInput").value.trim();
+      if (!userText) return;
+      
+      let chatbox = document.getElementById("chatbox");
+      chatbox.innerHTML += `<p class='userText'><span>${userText}</span></p>`;
+      document.getElementById("userInput").value = "";
+      chatbox.scrollTop = chatbox.scrollHeight;
+
+      try {
+        let response = await fetch("http://127.0.0.1:5000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userText })
         });
+        let data = await response.json();
+        chatbox.innerHTML += `<p class='botText'><span>${data.response}</span></p>`;
+      } catch {
+        chatbox.innerHTML += `<p class='botText'><span>Error contacting AI</span></p>`;
+      }
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
 
-        async function sendMessage() {
-            let userText = document.getElementById("userInput").value.trim();
-            if (userText === "") return;
-            let chatbox = document.getElementById("chatbox");
-            chatbox.innerHTML += `<p class='userText'><span>${userText}</span></p>`;
-            document.getElementById("userInput").value = "";
-            chatbox.scrollTop = chatbox.scrollHeight;
+    async function voiceInput() {
+    // Fetch recognized voice input from the backend /voice endpoint
+    try {
+      let response = await fetch("http://127.0.0.1:5000/voice");
+      let data = await response.json();
+      if (data.message) {
+        document.getElementById("userInput").value = data.message;
+        sendMessage();
+      } else if (data.error) {
+        alert(data.error);
+      }
+    } catch (error) {
+      alert("Error with voice input.");
+    }
+  }
 
-            try {
-                let response = await fetch("http://127.0.0.1:5000/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: userText })
-                });
-                let data = await response.json();
-                chatbox.innerHTML += `<p class='botText'><span>${data.response}</span></p>`;
-            } catch (error) {
-                chatbox.innerHTML += `<p class='botText'><span>Error contacting AI</span></p>`;
-            }
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-    </script>
+    function speakText() {
+      let chatbox = document.getElementById("chatbox");
+      let botMessages = chatbox.getElementsByClassName("botText");
+      if (botMessages.length > 0) {
+        let lastMessage = botMessages[botMessages.length - 1].innerText;
+        let utterance = new SpeechSynthesisUtterance(lastMessage);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("No bot message to speak.");
+      }
+    }
+  </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
+
+
