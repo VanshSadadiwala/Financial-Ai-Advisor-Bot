@@ -1,22 +1,41 @@
 document.addEventListener("DOMContentLoaded", () => {
     const themeToggle = document.getElementById("themeToggle");
+    const themeToggleMobile = document.getElementById("themeToggleMobile");
     
     // Check local storage for theme preference
-    if (localStorage.getItem("theme") === "dark") {
+    const isDarkMode = localStorage.getItem("theme") === "dark";
+    if (isDarkMode) {
         document.body.classList.add("dark-mode");
-        themeToggle.checked = true;
+        if (themeToggle) themeToggle.checked = true;
+        if (themeToggleMobile) themeToggleMobile.checked = true;
     }
 
-    // Toggle theme on switch
-    themeToggle.addEventListener("change", () => {
-        if (themeToggle.checked) {
+    // Toggle theme on desktop switch
+    if (themeToggle) {
+        themeToggle.addEventListener("change", () => {
+            toggleTheme(themeToggle.checked);
+            if (themeToggleMobile) themeToggleMobile.checked = themeToggle.checked;
+        });
+    }
+    
+    // Toggle theme on mobile switch
+    if (themeToggleMobile) {
+        themeToggleMobile.addEventListener("change", () => {
+            toggleTheme(themeToggleMobile.checked);
+            if (themeToggle) themeToggle.checked = themeToggleMobile.checked;
+        });
+    }
+    
+    // Theme toggle function
+    function toggleTheme(isDark) {
+        if (isDark) {
             document.body.classList.add("dark-mode");
             localStorage.setItem("theme", "dark");
         } else {
             document.body.classList.remove("dark-mode");
             localStorage.setItem("theme", "light");
         }
-    });
+    }
 
     // Initialize the market overview chart
     initMarketOverviewChart();
@@ -73,24 +92,106 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Mobile sidebar toggle
-    const navbarToggler = document.querySelector(".navbar-toggler");
-    const sidebar = document.querySelector(".sidebar");
-    
-    if (navbarToggler && sidebar) {
-        navbarToggler.addEventListener("click", function() {
-            sidebar.classList.toggle("active");
-        });
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('.sidebar');
+        const pageContainer = document.querySelector('.page-container');
         
-        // Close sidebar when clicking elsewhere on mobile
-        document.addEventListener("click", function(event) {
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(event.target) && 
-                !navbarToggler.contains(event.target) &&
-                sidebar.classList.contains("active")) {
-                sidebar.classList.remove("active");
+        // Create the sidebar toggle button if it doesn't exist
+        let sidebarToggleBtn = document.querySelector('.btn-sidebar-toggle');
+        if (!sidebarToggleBtn) {
+            sidebarToggleBtn = document.createElement('button');
+            sidebarToggleBtn.className = 'btn btn-sm btn-sidebar-toggle';
+            sidebarToggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            if (pageContainer) {
+                pageContainer.prepend(sidebarToggleBtn);
+            }
+        }
+
+        // Toggle sidebar on button click
+        sidebarToggleBtn.addEventListener('click', function() {
+            if (sidebar) {
+                sidebar.classList.toggle('show');
+                // Add overlay when sidebar is shown
+                toggleSidebarOverlay(sidebar.classList.contains('show'));
             }
         });
-    }
+        
+        // Close sidebar when clicking elsewhere
+        document.addEventListener('click', function(event) {
+            if (sidebar && 
+                sidebar.classList.contains('show') && 
+                !sidebar.contains(event.target) && 
+                event.target !== sidebarToggleBtn && 
+                !sidebarToggleBtn.contains(event.target)) {
+                sidebar.classList.remove('show');
+                toggleSidebarOverlay(false);
+            }
+        });
+
+        // Create and toggle sidebar overlay
+        function toggleSidebarOverlay(show) {
+            let overlay = document.querySelector('.sidebar-overlay');
+            
+            if (show) {
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.className = 'sidebar-overlay';
+                    document.body.appendChild(overlay);
+                    
+                    // Add styles to overlay
+                    overlay.style.position = 'fixed';
+                    overlay.style.top = '0';
+                    overlay.style.left = '0';
+                    overlay.style.right = '0';
+                    overlay.style.bottom = '0';
+                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    overlay.style.zIndex = '1040';
+                    overlay.style.opacity = '0';
+                    overlay.style.transition = 'opacity 0.3s ease';
+                    
+                    // Close sidebar when overlay is clicked
+                    overlay.addEventListener('click', function() {
+                        if (sidebar) {
+                            sidebar.classList.remove('show');
+                            toggleSidebarOverlay(false);
+                        }
+                    });
+                    
+                    // Add fade-in effect
+                    setTimeout(() => {
+                        overlay.style.opacity = '1';
+                    }, 10);
+                }
+            } else if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.remove();
+                }, 300);
+            }
+        }
+
+        // Check screen size and adjust layout
+        function checkScreenSize() {
+            if (window.innerWidth <= 768) {
+                if (sidebarToggleBtn) sidebarToggleBtn.style.display = 'block';
+                if (sidebar) {
+                    sidebar.classList.remove('show');
+                    toggleSidebarOverlay(false);
+                }
+            } else {
+                if (sidebarToggleBtn) sidebarToggleBtn.style.display = 'none';
+                if (sidebar) {
+                    sidebar.style.display = 'block';
+                    sidebar.classList.remove('show');
+                    toggleSidebarOverlay(false);
+                }
+            }
+        }
+
+        // Initial check and event listener for window resize
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+    });
 });
 
 // Sidebar Clickable components

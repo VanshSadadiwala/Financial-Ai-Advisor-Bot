@@ -496,13 +496,16 @@ canvas {
         width: 200px;
     }
     
-    .main-content {
+    .main-content, #stockDashboard, #aboutSection {
         margin-left: 200px;
-        width: calc(100% - 200px);
     }
     
-    #stockDashboard {
-        margin-left: 200px;
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    #aboutSection .team-member-card {
+        margin-bottom: 15px;
     }
 }
 
@@ -512,26 +515,127 @@ canvas {
     }
     
     .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        width: 250px;
+        width: 100%;
+        height: auto;
+        position: relative;
+        margin-bottom: 20px;
+        display: none;
     }
     
-    .sidebar.active {
-        transform: translateX(0);
+    .sidebar ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        padding: 10px 0;
     }
     
-    .main-content {
+    .sidebar li {
+        margin: 0 15px;
+        padding: 10px;
+    }
+    
+    .main-content, #stockDashboard, #aboutSection {
         margin-left: 0;
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    #aboutSection .mission-card {
+        height: auto;
+        margin-bottom: 15px;
+    }
+    
+    #aboutSection .row.team-grid {
+        height: auto;
+    }
+    
+    #aboutSection .team-member-card {
+        height: auto;
+        margin-bottom: 15px;
+    }
+    
+    .navbar-custom .navbar-toggler {
+        display: block;
+    }
+    
+    .navbar-custom .navbar-collapse {
+        margin-top: 10px;
+    }
+    
+    .chat-icon-container {
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    /* Header adjustments */
+    .navbar-brand .logo-text {
+        font-size: 1.5rem;
+    }
+    
+    .navbar-custom .nav-link {
+        padding: 8px 10px;
+    }
+    
+    /* Welcome card */
+    .welcome-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .welcome-card p {
+        font-size: 0.9rem;
+    }
+    
+    .quick-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .quick-actions button {
+        margin-bottom: 10px;
         width: 100%;
     }
     
-    #stockDashboard {
-        margin-left: 0;
+    /* About section */
+    #aboutSection .member-avatar i {
+        font-size: 40px;
     }
     
-    .navbar-custom .theme-switch {
-        margin: 10px 0;
+    #aboutSection .team-member-card h4 {
+        font-size: 1.2rem;
+    }
+    
+    #aboutSection .skill-tag {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+    
+    /* Dashboard controls */
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .d-flex.justify-content-between button {
+        margin-top: 10px;
+    }
+    
+    /* Force single column layout */
+    .col-md-6 {
+        width: 100%;
+    }
+}
+
+/* Fix for Safari overflow issues */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #aboutSection, #stockDashboard, .main-content {
+        -webkit-overflow-scrolling: touch;
     }
 }
 
@@ -1252,4 +1356,127 @@ canvas {
 
 #aboutSection .col-md-6 {
     padding: 8px;
+}
+
+/* Sidebar toggle button */
+.btn-sidebar-toggle {
+    position: fixed;
+    top: 70px;
+    left: 15px;
+    z-index: 1030;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-sidebar-toggle:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.05);
+}
+
+.btn-sidebar-toggle i {
+    font-size: 18px;
+}
+
+/* Mobile navbar controls */
+.navbar-mobile-controls {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-custom .navbar-toggler {
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+
+/* Enhanced responsive styles */
+@media (max-width: 991px) {
+    .navbar-custom .container {
+        padding: 0 15px;
+    }
+    
+    .navbar-collapse {
+        background-color: var(--accent-color);
+        padding: 15px;
+        margin: 0 -15px;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-nav {
+        margin-bottom: 0;
+    }
+    
+    .navbar-custom .nav-link {
+        padding: 10px;
+        border-radius: 5px;
+    }
+    
+    .navbar-custom .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .main-content, #stockDashboard, #aboutSection {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .sidebar {
+        margin-top: 0;
+    }
+    
+    .btn-sidebar-toggle {
+        top: 70px;
+    }
+}
+
+@media (max-width: 768px) {
+    .btn-sidebar-toggle {
+        z-index: 1100;
+        top: 15px;
+        left: 15px;
+    }
+    
+    .navbar-custom {
+        position: relative;
+        z-index: 1150;
+    }
+    
+    .navbar-toggler {
+        z-index: 1160;
+    }
+    
+    .sidebar {
+        position: fixed;
+        width: 250px;
+        height: 100%;
+        z-index: 1050;
+        left: -250px;
+        transition: left 0.3s ease;
+        top: 0;
+        padding-top: 70px;
+        display: block;
+    }
+    
+    .sidebar.show {
+        left: 0;
+    }
+    
+    .sidebar ul {
+        flex-direction: column;
+    }
+    
+    .sidebar li {
+        margin: 0 0 10px 0;
+    }
 }
