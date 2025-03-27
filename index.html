@@ -1,119 +1,158 @@
-<!-- HTML Document Declaration -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard</title>
-    
-    <!-- CSS Links -->
+    <title>Financial Assistant</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    
-    <!-- JavaScript Libraries -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<!-- Navbar Section -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container">
-        <!-- Logo -->
-        <a class="navbar-brand" href="#">
-            <img src="logo.png" alt="Company Logo" width="50">
+        <a class="navbar-brand" href="index.html">
+            <span class="logo-text">FinAI</span>
         </a>
-        
-        <!-- Mobile Toggle Button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+            <i class="fas fa-bars"></i>
         </button>
-        
-        <!-- Navigation Links -->
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
             </ul>
-            
-            <!-- Theme Toggle Switch -->
             <div class="theme-switch">
                 <label class="switch">
                     <input type="checkbox" id="themeToggle">
                     <span class="slider round"></span>
                 </label>
             </div>
-            
-            <!-- Login and Sign Up Buttons -->
-            <div class="ms-3">
-                <button class="btn btn-outline-light me-2 btn-login">Log In</button>
-                <button class="btn btn-primary">Sign Up</button>
-            </div>
         </div>
     </div>
 </nav>
 
-<!-- Sidebar Section -->
-<div class="sidebar">
-    <ul>
-        <li><i class="fas fa-chart-line"></i> Stock Analysis</li>
-        <li><i class="fas fa-chart-bar"></i> Future Forecasting</li>
-        <li><i class="fas fa-newspaper"></i> News</li>
-        <li><i class="fas fa-lightbulb"></i> Suggestions & Plans</li>
-        <li><a class="nav-link" href="chatbot.html"><i class="fas fa-robot"></i> AI Chatbot</a></li>
-    </ul>
-</div>
+<div class="page-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul>
+            <li><i class="fas fa-chart-line"></i> Stock Analysis</li>
+            <li><a class="nav-link" href="chatbot.html"><i class="fas fa-robot"></i> AI Chatbot</a></li>
+        </ul>
+    </div>
 
-<!-- Stock Market Dashboard Section -->
-<div id="stockDashboard" class="container-fluid d-none">
-    <div class="row">
-        <!-- Sidebar Menu -->
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active text-white" href="#">Overview</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Live Market</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Top Gainers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Top Losers</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Stock Market Dashboard</h1>
+    <!-- Main Content Area -->
+    <div id="mainContent" class="main-content">
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card welcome-card">
+                        <div class="card-body">
+                            <h2>Welcome to FinAI</h2>
+                            <p>Your intelligent financial assistant powered by AI. Ask questions, get investment advice, and improve your financial literacy.</p>
+                            <div class="quick-actions">
+                                <button class="btn btn-primary" id="startChatBtn">Chat with AI</button>
+                                <button class="btn btn-outline-primary" id="stockAnalysisbtn">Analyze Stocks</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <!-- Stock Charts Section -->
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col-md-6">
-                    <canvas id="stockChart"></canvas>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Market Overview</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="marketOverviewChart"></canvas>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <canvas id="marketTrends"></canvas>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Featured Insights</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">Understanding Mutual Funds</li>
+                                <li class="list-group-item">Getting Started with Stock Investing</li>
+                                <li class="list-group-item">Retirement Planning Basics</li>
+                                <li class="list-group-item">Tax-Saving Investment Options</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </div>
+
+    <!-- Stock Analysis Dashboard -->
+    <div id="stockDashboard" class="container-fluid d-none">
+        <div class="row">
+            <!-- Main Content Area -->
+            <main class="col-12">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Stock Market Analysis</h1>
+                    <button class="btn btn-outline-secondary" id="backToMainBtn">Back to Home</button>
+                </div>
+                
+                <!-- Charts -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Stock Price Trends</div>
+                            <div class="card-body">
+                                <canvas id="stockChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Market Comparison</div>
+                            <div class="card-body">
+                                <canvas id="marketTrends"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Real-Time Stock Price</div>
+                            <div class="card-body">
+                                <canvas id="stockPriceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Trading Volume</div>
+                            <div class="card-body">
+                                <canvas id="stockVolumeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 </div>
 
-<!-- Stock Analysis Button -->
-<a id="stockAnalysisbtn" class="nav-link" href="#">Stock Analysis</a>
+<!-- Floating Chatbot Icon -->
+<div class="chat-icon-container">
+    <button id="chatBotIcon" class="btn-chat-icon">
+        <i class="fas fa-robot"></i>
+    </button>
+</div>
 
-<!-- JavaScript Files -->
 <script src="script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

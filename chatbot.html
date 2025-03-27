@@ -96,6 +96,12 @@
       border: none;
       cursor: pointer;
     }
+    .left-buttons, .right-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 
     .icon-btn img {
       width: 32px;
@@ -126,14 +132,20 @@
 
         <!-- Buttons row -->
         <div class="buttons-container">
-          <button id="uploadButton" class="btn btn-secondary">Upload</button>
-          <button id="micButton" class="icon-btn" onclick="voiceInput()">
-            <img src="icon/mic_icon.png" alt="Mic">
-          </button>
-          <button id="speakerButton" class="icon-btn" onclick="speakText()">
-            <img src="icon/speaker_icon.png" alt="Speaker">
-          </button>
+          <div class="left-buttons">
+            <button id="micButton" class="icon-btn" onclick="voiceInput()">
+              <img src="icon/mic_icon.png" alt="Mic">
+            </button>
+            <button id="speakerButton" class="icon-btn" onclick="speakText()">
+              <img src="icon/speaker_icon.png" alt="Speaker">
+            </button>
+          </div>
+          <div class="right-buttons">
+            <button id="clearChatButton" class="btn btn-danger" onclick="clearChat()">Clear Chat</button>
+            <button id="uploadButton" class="btn btn-secondary">Upload</button>
+          </div>
         </div>
+        
       </div>
     </div>
   </div>
@@ -216,6 +228,94 @@ function speakText() {
     alert("No bot message to speak.");
   }
 }
+document.getElementById("uploadButton").addEventListener("click", function () {
+  let input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.onchange = async function () {
+    let file = input.files[0];
+    if (!file) return;
+
+    let formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      let response = await fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      let data = await response.json();
+      let chatbox = document.getElementById("chatbox");
+
+      if (data.response) {
+        chatbox.innerHTML += `<p class='botText'><span>${data.response}</span></p>`;
+      } else {
+        chatbox.innerHTML += `<p class='botText'><span>Error processing image</span></p>`;
+      }
+      
+      chatbox.scrollTop = chatbox.scrollHeight;
+    } catch (error) {
+      alert("Error uploading image.");
+    }
+  };
+
+  input.click();
+});
+async function sendMessage() {
+  let userText = document.getElementById("userInput").value.trim();
+  if (!userText) return;
+
+  let chatbox = document.getElementById("chatbox");
+  chatbox.innerHTML += `<p class='userText'><span>${userText}</span></p>`;
+  document.getElementById("userInput").value = "";
+  chatbox.scrollTop = chatbox.scrollHeight;
+
+  // Show typing indicator
+  let botMessage = document.createElement("p");
+  botMessage.className = "botText";
+  let botSpan = document.createElement("span");
+  botSpan.innerHTML = "Typing...";
+  botMessage.appendChild(botSpan);
+  chatbox.appendChild(botMessage);
+  chatbox.scrollTop = chatbox.scrollHeight;
+
+  try {
+    let response = await fetch("http://127.0.0.1:5000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userText })
+    });
+    let data = await response.json();
+    
+    let formattedResponse = data.response.replace(/\n/g, "<br>");
+    
+    // Typing effect: Display word by word
+    botSpan.innerHTML = "";
+    let words = formattedResponse.split(" ");
+    let i = 0;
+    
+    function typeEffect() {
+      if (i < words.length) {
+        botSpan.innerHTML += words[i] + " ";
+        i++;
+        chatbox.scrollTop = chatbox.scrollHeight;
+        setTimeout(typeEffect, 50); // Adjust speed here
+      }
+    }
+    
+    typeEffect();
+    
+  } catch {
+    botSpan.innerHTML = "Error contacting AI";
+  }
+
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+function clearChat() {
+  document.getElementById("chatbox").innerHTML = "";
+}
+
 
   </script>
 
