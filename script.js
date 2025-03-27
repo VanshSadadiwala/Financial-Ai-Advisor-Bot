@@ -157,6 +157,37 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    // About section navigation
+    const aboutBtn = document.getElementById('aboutBtn');
+    const aboutSection = document.getElementById('aboutSection');
+    const backToMainFromAboutBtn = document.getElementById('backToMainFromAboutBtn');
+
+    aboutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        mainContent.classList.add('d-none');
+        stockDashboard.classList.add('d-none');
+        aboutSection.classList.remove('d-none');
+        updateActiveNavLink('aboutBtn');
+    });
+
+    backToMainFromAboutBtn.addEventListener('click', function() {
+        mainContent.classList.remove('d-none');
+        stockDashboard.classList.add('d-none');
+        aboutSection.classList.add('d-none');
+        updateActiveNavLink('homeBtn');
+    });
+
+    // Update the updateActiveNavLink function to handle the About link
+    function updateActiveNavLink(activeId) {
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.id === activeId) {
+                link.classList.add('active');
+            }
+        });
+    }
 });
 
 // Function to initialize Market Overview Chart on the main page

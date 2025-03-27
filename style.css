@@ -993,3 +993,263 @@ canvas {
     box-shadow: 0 4px 15px rgba(var(--accent-color-rgb), 0.15);
     animation: ambientPulse 8s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
 }
+
+/* About Section Styles */
+#aboutSection {
+    padding: 20px;
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+    height: calc(100vh - 56px);
+    overflow-y: auto; /* Change from hidden to auto to allow vertical scrolling */
+    overflow-x: hidden;
+}
+
+/* Add some padding at the bottom to ensure all content is comfortably visible */
+#aboutSection main {
+    height: 100%;
+    padding: 0 0 20px 0;
+    margin: 0;
+}
+
+#aboutSection .row.team-grid {
+    height: calc(100% - 120px);
+    margin: 0;
+}
+
+#aboutSection .mission-card {
+    margin-bottom: 15px;
+    height: auto;
+}
+
+#aboutSection .mission-card .card-body {
+    padding: 10px 15px;
+}
+
+#aboutSection .mission-card h3 {
+    margin-bottom: 5px;
+    font-size: 1.3rem;
+}
+
+#aboutSection .mission-card p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+#aboutSection .team-member-card {
+    height: 100%;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+#aboutSection .team-member-card .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px 15px;
+}
+
+#aboutSection .member-avatar {
+    margin-bottom: 15px;
+    color: var(--accent-color);
+}
+
+#aboutSection .member-avatar i {
+    font-size: 60px;
+}
+
+#aboutSection .team-member-card h4 {
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+#aboutSection .member-skills {
+    margin: 12px 0;
+}
+
+#aboutSection .skill-tag {
+    background: var(--accent-color);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-size: 0.85rem;
+    margin: 0 5px;
+}
+
+#aboutSection .social-links {
+    margin-top: 15px;
+}
+
+/* Override the card before effect for the team member cards */
+#aboutSection .team-member-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--accent-color), var(--sidebar-bg), var(--accent-color));
+    background-size: 300% 300%;
+    background-position: var(--card-gradient-pos);
+    z-index: 1;
+    opacity: 1;
+}
+
+/* Adjust alignment of the border row */
+#aboutSection .d-flex.justify-content-between {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+/* Add animation for member cards */
+@keyframes cardHover {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.team-member-card:hover {
+    animation: none;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+#aboutSection .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#aboutSection .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+#aboutSection .member-avatar {
+    color: var(--accent-color);
+    margin-bottom: 8px;
+    transition: transform 0.3s ease;
+}
+
+#aboutSection .team-member-card:hover .member-avatar {
+    transform: scale(1.1);
+}
+
+#aboutSection .member-avatar i {
+    font-size: 3rem;
+    transition: all 0.3s ease;
+}
+
+#aboutSection .team-member-card:hover .member-avatar i {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(var(--accent-color-rgb), 0.3);
+}
+
+#aboutSection .team-member-card h4 {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    margin-bottom: 3px;
+    transition: color 0.3s ease;
+}
+
+#aboutSection .team-member-card:hover h4 {
+    color: var(--accent-color);
+}
+
+#aboutSection .team-member-card .text-muted {
+    color: var(--text-muted) !important;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+#aboutSection .member-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    margin: 5px 0;
+}
+
+#aboutSection .skill-tag {
+    background: rgba(var(--accent-color-rgb), 0.1);
+    color: var(--accent-color);
+    padding: 3px 8px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+#aboutSection .team-member-card:hover .skill-tag {
+    background: var(--accent-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+#aboutSection .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+#aboutSection .social-link {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+#aboutSection .social-link:hover {
+    color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* Add ambient lighting effects to About section cards */
+#aboutSection .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--accent-color), var(--sidebar-bg), var(--accent-color));
+    background-size: 300% 300%;
+    background-position: var(--card-gradient-pos);
+    z-index: 1;
+    transition: background-position 1.5s ease;
+}
+
+#aboutSection .card:hover::before {
+    background-position: var(--card-gradient-hover-pos);
+    animation: gradientShift 2s linear infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #aboutSection {
+        margin-left: 0;
+        padding: 10px;
+    }
+}
+
+#aboutSection .col-md-6 {
+    padding: 8px;
+}
