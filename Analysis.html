@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis Dashboard 🚀</title>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+        }
+        #chartContainer {
+            width: 100%;
+            height: 500px;
+        }
+        .stock-info {
+            display: flex;
+            justify-content: space-between;
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .info-box {
+            text-align: left;
+        }
+        select, input, button {
+            padding: 8px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Real-Time Stock Analysis 🚀</h2>
+        <form id="stockForm">
+            <input type="text" id="stock-symbol" placeholder="Enter Stock Symbol" value="AAPL">
+            <select id="period">
+                <option value="7D">7 Days</option>
+                <option value="1M" selected>1 Month</option>
+                <option value="6M">6 Months</option>
+                <option value="1Y">1 Year</option>
+                <option value="5Y">5 Years</option>
+            </select>
+            <button type="button" id="getDataBtn">Get Data</button> <!-- Changed to button type="button" -->
+        </form>
+
+        <div class="stock-info" id="stock-details">
+            <div class="info-box">
+                <strong>Stock Symbol:</strong> <span id="symbol">N/A</span><br>
+                <strong>Change:</strong> <span id="change">N/A</span> (<span id="percent-change">N/A%</span>)<br>
+            </div>
+            <div class="info-box">
+                <strong>Day High:</strong> $<span id="high">N/A</span><br>
+                <strong>Day Low:</strong> $<span id="low">N/A</span>
+            </div>
+            <div class="info-box">
+                <strong>Price:</strong> $<span id="price">N/A</span><br>
+                <strong>Volume:</strong> <span id="volume">N/A</span>
+            </div>
+        </div>
+
+        <div id="chartContainer"></div>
+    </div>
+
+<script>
+let chart;
+
+document.getElementById("getDataBtn").addEventListener("click", function() {
+    const ticker = document.getElementById("stock-symbol").value.toUpperCase().trim();
+    const duration = document.getElementById("period").value;
+
+    if (ticker === "") {
+        alert("Please enter a stock symbol.");
+        return;
+    }
+
+    fetchStockData(ticker, duration);
+});
+
+function fetchStockData(ticker, duration) {
+    console.log("Requesting data for:", ticker, "Duration:", duration);
+    
+    fetch("http://127.0.0.1:5000/get_stock_data", {  // Change URL if hosted
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker: ticker, duration: duration })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Response received:", data);
+
+        if (data.error) {
+            alert("Error: " + data.error);
+            return;
+        }
+
+        updateStockDetails(data);
+
+        // Handle empty data case
+        const dataPoints = data.data && data.data.length > 0 ? data.data.map(point => ({
+            x: new Date(point.x || point.timestamp),
+            y: point.y || point.price
+        })) : [];
+
+        if (dataPoints.length === 0) {
+            alert("No data available for the selected duration.");
+            return;
+        }
+
+        renderChart(dataPoints, duration);
+    })
+    .catch(error => console.error("❌ Error fetching stock data:", error));
+}
+
+function renderChart(dataPoints, duration) {
+    let color = dataPoints[0].y > dataPoints[dataPoints.length - 1].y ? "#FF0000" : "#00FF00";
+
+    chart = new CanvasJS.Chart("chartContainer", {
+        backgroundColor: "#1e1e1e",
+        animationEnabled: true,
+        theme: "dark1",
+        title: { text: "Stock Price Chart", fontColor: "white" },
+        axisX: {
+            intervalType: duration === "1D" ? "minute" : (duration === "7D" ? "day" : "month"),
+            valueFormatString: duration === "1D" ? "HH:mm" : "MMM DD, YYYY",
+            labelFontColor: "#ffffff",
+            labelAngle: -20
+        },
+        axisY: { prefix: "$", labelFontColor: "#ffffff" },
+        toolTip: {
+            shared: true,
+            contentFormatter: function(e) {
+                let content = "<strong>" + e.entries[0].dataPoint.x + "</strong><br>";
+                e.entries.forEach(entry => {
+                    content += "<span style='color:" + entry.dataSeries.color + "'>" + entry.dataSeries.name + ": </span>" + entry.dataPoint.y + "<br>";
+                });
+                return content;
+            }
+        },
+        data: [{
+            type: "line",
+            markerSize: 0,
+            lineThickness: 2,
+            color: color,
+            dataPoints: dataPoints
+        }]
+    });
+
+    chart.render();
+}
+
+function updateStockDetails(data) {
+    document.getElementById("symbol").innerText = data.symbol || "N/A";
+    document.getElementById("change").innerText = data.change || "N/A";
+    document.getElementById("percent-change").innerText = (data.percent_change || "N/A") + "%";
+    document.getElementById("high").innerText = data.high || "N/A";
+    document.getElementById("low").innerText = data.low || "N/A";
+    document.getElementById("price").innerText = data.price || "N/A";
+    document.getElementById("volume").innerText = data.volume || "N/A";
+}
+</script>
+
+</body>
+</html>
