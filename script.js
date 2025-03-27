@@ -43,155 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize dynamic ambient lighting for cards
     initDynamicCardLighting();
     
-    // Chatbot Icon Click Event
-    const chatBotIcon = document.getElementById("chatBotIcon");
-    if (chatBotIcon) {
-        // Track hover count to change colors on each hover
-        let hoverCount = 0;
-        const hueAngles = [0, 30, 60, 120, 180, 240, 270, 300, 330];
-        const gradientAngles = ['0deg', '45deg', '90deg', '135deg', '180deg', '225deg', '270deg', '315deg'];
-        
-        // Add hover event to change colors
-        chatBotIcon.addEventListener("mouseenter", function() {
-            // Get new random colors each time
-            hoverCount++;
-            const hueRotate = hueAngles[hoverCount % hueAngles.length];
-            const gradientAngle = gradientAngles[hoverCount % gradientAngles.length];
-            
-            // Set new custom properties for colors
-            this.style.setProperty('--light-angle', gradientAngle);
-            this.style.setProperty('--light-color', `hsla(${hueRotate}, 80%, 60%, 0.6)`);
-            
-            // Randomly change the shadow colors too
-            const r = Math.floor(Math.random() * 255);
-            const g = Math.floor(Math.random() * 255);
-            const b = Math.floor(Math.random() * 255);
-            this.style.boxShadow = `0 4px 15px rgba(${r}, ${g}, ${b}, 0.3)`;
-        });
-        
-        // Mouse move event to track cursor
-        chatBotIcon.addEventListener("mousemove", function(e) {
-            // Get mouse position relative to the button
-            const rect = this.getBoundingClientRect();
-            const x = e.clientX - rect.left; // x position within the element
-            const y = e.clientY - rect.top;  // y position within the element
-            
-            // Convert to percentage
-            const xPercent = (x / rect.width) * 100;
-            const yPercent = (y / rect.height) * 100;
-            
-            // Update custom properties with smooth transitions
-            this.style.setProperty('--x-pos', `${xPercent}%`);
-            this.style.setProperty('--y-pos', `${yPercent}%`);
-        });
-        
-        chatBotIcon.addEventListener("click", function() {
-            // Placeholder for actual chatbot functionality
-            window.location.href = "chatbot.html";
-        });
-    }
-    
-    // Mobile sidebar toggle
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebar = document.querySelector('.sidebar');
-        const pageContainer = document.querySelector('.page-container');
-        
-        // Create the sidebar toggle button if it doesn't exist
-        let sidebarToggleBtn = document.querySelector('.btn-sidebar-toggle');
-        if (!sidebarToggleBtn) {
-            sidebarToggleBtn = document.createElement('button');
-            sidebarToggleBtn.className = 'btn btn-sm btn-sidebar-toggle';
-            sidebarToggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
-            if (pageContainer) {
-                pageContainer.prepend(sidebarToggleBtn);
-            }
-        }
-
-        // Toggle sidebar on button click
-        sidebarToggleBtn.addEventListener('click', function() {
-            if (sidebar) {
-                sidebar.classList.toggle('show');
-                // Add overlay when sidebar is shown
-                toggleSidebarOverlay(sidebar.classList.contains('show'));
-            }
-        });
-        
-        // Close sidebar when clicking elsewhere
-        document.addEventListener('click', function(event) {
-            if (sidebar && 
-                sidebar.classList.contains('show') && 
-                !sidebar.contains(event.target) && 
-                event.target !== sidebarToggleBtn && 
-                !sidebarToggleBtn.contains(event.target)) {
-                sidebar.classList.remove('show');
-                toggleSidebarOverlay(false);
-            }
-        });
-
-        // Create and toggle sidebar overlay
-        function toggleSidebarOverlay(show) {
-            let overlay = document.querySelector('.sidebar-overlay');
-            
-            if (show) {
-                if (!overlay) {
-                    overlay = document.createElement('div');
-                    overlay.className = 'sidebar-overlay';
-                    document.body.appendChild(overlay);
-                    
-                    // Add styles to overlay
-                    overlay.style.position = 'fixed';
-                    overlay.style.top = '0';
-                    overlay.style.left = '0';
-                    overlay.style.right = '0';
-                    overlay.style.bottom = '0';
-                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                    overlay.style.zIndex = '1040';
-                    overlay.style.opacity = '0';
-                    overlay.style.transition = 'opacity 0.3s ease';
-                    
-                    // Close sidebar when overlay is clicked
-                    overlay.addEventListener('click', function() {
-                        if (sidebar) {
-                            sidebar.classList.remove('show');
-                            toggleSidebarOverlay(false);
-                        }
-                    });
-                    
-                    // Add fade-in effect
-                    setTimeout(() => {
-                        overlay.style.opacity = '1';
-                    }, 10);
-                }
-            } else if (overlay) {
-                overlay.style.opacity = '0';
-                setTimeout(() => {
-                    overlay.remove();
-                }, 300);
-            }
-        }
-
-        // Check screen size and adjust layout
-        function checkScreenSize() {
-            if (window.innerWidth <= 768) {
-                if (sidebarToggleBtn) sidebarToggleBtn.style.display = 'block';
-                if (sidebar) {
-                    sidebar.classList.remove('show');
-                    toggleSidebarOverlay(false);
-                }
-            } else {
-                if (sidebarToggleBtn) sidebarToggleBtn.style.display = 'none';
-                if (sidebar) {
-                    sidebar.style.display = 'block';
-                    sidebar.classList.remove('show');
-                    toggleSidebarOverlay(false);
-                }
-            }
-        }
-
-        // Initial check and event listener for window resize
-        checkScreenSize();
-        window.addEventListener('resize', checkScreenSize);
-    });
+    // Initialize sidebar toggle (moved from nested DOMContentLoaded)
+    initSidebarToggle();
 });
 
 // Sidebar Clickable components
@@ -208,18 +61,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", function () {
     const stockAnalysisBtn = document.getElementById("stockAnalysisbtn");
+    const mobileStockBtn = document.getElementById("mobileStockBtn");
     const stockDashboard = document.getElementById("stockDashboard");
     const mainContent = document.getElementById("mainContent");
     const backToMainBtn = document.getElementById("backToMainBtn");
     const startChatBtn = document.getElementById("startChatBtn");
 
+    // Function to show stock dashboard
+    function showStockDashboard() {
+        stockDashboard.classList.remove("d-none");
+        if (mainContent) {
+            mainContent.classList.add("d-none"); // Hide the default content
+        }
+        if (aboutSection) {
+            aboutSection.classList.add("d-none"); // Hide about section if visible
+        }
+        fetchLiveStockData(); // Fetch live stock data dynamically
+    }
+
     if (stockAnalysisBtn) {
         stockAnalysisBtn.addEventListener("click", function () {
-            stockDashboard.classList.remove("d-none");
-            if (mainContent) {
-                mainContent.classList.add("d-none"); // Hide the default content
+            showStockDashboard();
+        });
+    }
+    
+    // Mobile Stock Analysis button
+    if (mobileStockBtn) {
+        mobileStockBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            showStockDashboard();
+            // Close mobile navbar after clicking
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse.show');
+            if (navbarCollapse && navbarToggler) {
+                navbarToggler.click();
             }
-            fetchLiveStockData(); // Fetch live stock data dynamically
         });
     }
 
@@ -642,4 +518,35 @@ function initDynamicCardLighting() {
             setTimeout(initializeCardEffects, 500);
         }
     });
+}
+
+// Mobile sidebar toggle
+function initSidebarToggle() {
+    const sidebar = document.querySelector('.sidebar');
+    
+    // Skip creating the sidebar toggle button
+    
+    // Make sure sidebar is accessible in desktop mode
+    function checkScreenSize() {
+        if (window.innerWidth <= 768) {
+            if (sidebar) {
+                sidebar.style.display = 'none';
+            }
+        } else {
+            if (sidebar) {
+                sidebar.style.display = 'block';
+                sidebar.style.left = '0';
+            }
+        }
+    }
+
+    // Initial check and event listener for window resize
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Force the sidebar to be visible if this is not mobile
+    if (window.innerWidth > 768 && sidebar) {
+        sidebar.style.display = 'block';
+        sidebar.style.left = '0';
+    }
 }

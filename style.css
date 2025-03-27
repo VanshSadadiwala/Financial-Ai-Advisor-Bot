@@ -1358,34 +1358,6 @@ canvas {
     padding: 8px;
 }
 
-/* Sidebar toggle button */
-.btn-sidebar-toggle {
-    position: fixed;
-    top: 70px;
-    left: 15px;
-    z-index: 1030;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-.btn-sidebar-toggle:hover {
-    background-color: var(--accent-hover);
-    transform: scale(1.05);
-}
-
-.btn-sidebar-toggle i {
-    font-size: 18px;
-}
-
 /* Mobile navbar controls */
 .navbar-mobile-controls {
     display: flex;
@@ -1434,10 +1406,6 @@ canvas {
     .sidebar {
         margin-top: 0;
     }
-    
-    .btn-sidebar-toggle {
-        top: 70px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -1445,6 +1413,7 @@ canvas {
         z-index: 1100;
         top: 15px;
         left: 15px;
+        display: block !important;
     }
     
     .navbar-custom {
@@ -1461,11 +1430,12 @@ canvas {
         width: 250px;
         height: 100%;
         z-index: 1050;
-        left: -250px;
+        left: -280px;
         transition: left 0.3s ease;
         top: 0;
         padding-top: 70px;
         display: block;
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
     }
     
     .sidebar.show {
