@@ -25,8 +25,7 @@
 
     .card {
       width: 90%;
-      max-width: 10000px;
-      height: 90vh;
+      max-width: 950px;
       display: flex;
       flex-direction: column;
     }
@@ -35,13 +34,51 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      max-height: 90vh;
     }
 
-    #chatbox {
-      flex: 1;
-      overflow-y: auto;
-      height: 60vh;
-    }
+/* Chatbox styling */
+#chatbox {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 80vh;
+  min-height: 100px;
+  padding: 10px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bot message styling */
+.botText {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.botText span {
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 4px solid blue;
+  max-width: 70%;
+}
+
+/* User message styling */
+.userText {
+  display: flex;
+  justify-content: flex-end;
+  margin: 5px 0;
+}
+
+.userText span {
+  background: #333;
+  color: white;
+  padding: 10px;
+  border-radius: 12px;
+  max-width: 70%;
+}
+
 
     .input-group {
       margin-top: auto;
@@ -107,27 +144,33 @@
     });
 
     async function sendMessage() {
-      let userText = document.getElementById("userInput").value.trim();
-      if (!userText) return;
-      
-      let chatbox = document.getElementById("chatbox");
-      chatbox.innerHTML += `<p class='userText'><span>${userText}</span></p>`;
-      document.getElementById("userInput").value = "";
-      chatbox.scrollTop = chatbox.scrollHeight;
+  let userText = document.getElementById("userInput").value.trim();
+  if (!userText) return;
+  
+  let chatbox = document.getElementById("chatbox");
+  chatbox.innerHTML += `<p class='userText'><span>${userText}</span></p>`;
+  document.getElementById("userInput").value = "";
+  chatbox.scrollTop = chatbox.scrollHeight;
 
-      try {
-        let response = await fetch("http://127.0.0.1:5000/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userText })
-        });
-        let data = await response.json();
-        chatbox.innerHTML += `<p class='botText'><span>${data.response}</span></p>`;
-      } catch {
-        chatbox.innerHTML += `<p class='botText'><span>Error contacting AI</span></p>`;
-      }
-      chatbox.scrollTop = chatbox.scrollHeight;
-    }
+  try {
+    let response = await fetch("http://127.0.0.1:5000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userText })
+    });
+    let data = await response.json();
+    
+    // Format response with line breaks
+    let formattedResponse = data.response.replace(/\n/g, "<br>");
+    
+    chatbox.innerHTML += `<p class='botText'><span>${formattedResponse}</span></p>`;
+  } catch {
+    chatbox.innerHTML += `<p class='botText'><span>Error contacting AI</span></p>`;
+  }
+  
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+
 
     async function voiceInput() {
     // Fetch recognized voice input from the backend /voice endpoint
@@ -145,17 +188,35 @@
     }
   }
 
-    function speakText() {
-      let chatbox = document.getElementById("chatbox");
-      let botMessages = chatbox.getElementsByClassName("botText");
-      if (botMessages.length > 0) {
-        let lastMessage = botMessages[botMessages.length - 1].innerText;
-        let utterance = new SpeechSynthesisUtterance(lastMessage);
-        window.speechSynthesis.speak(utterance);
-      } else {
-        alert("No bot message to speak.");
-      }
-    }
+  let isSpeaking = false; // Track if speech is active
+let utterance = null; // Store utterance for reference
+
+function speakText() {
+  if (isSpeaking) {
+    window.speechSynthesis.cancel(); // Stop speaking if already speaking
+    isSpeaking = false;
+    return; // Exit function
+  }
+
+  let chatbox = document.getElementById("chatbox");
+  let botMessages = chatbox.getElementsByClassName("botText");
+
+  if (botMessages.length > 0) {
+    let lastMessage = botMessages[botMessages.length - 1].innerText;
+
+    utterance = new SpeechSynthesisUtterance(lastMessage);
+
+    utterance.onend = function () {
+      isSpeaking = false; // Reset when speech ends
+    };
+
+    window.speechSynthesis.speak(utterance);
+    isSpeaking = true;
+  } else {
+    alert("No bot message to speak.");
+  }
+}
+
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
