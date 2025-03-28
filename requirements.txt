@@ -7,3 +7,4 @@ pypdf2
 pytesseract
 opencv-python-headless
 numpy
+gunicorn
