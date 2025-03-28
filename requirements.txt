@@ -8,3 +8,4 @@ pytesseract
 opencv-python-headless
 numpy
 gunicorn
+gtts
