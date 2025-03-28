@@ -104,7 +104,7 @@ document.getElementById("getDataBtn").addEventListener("click", function() {
 function fetchStockData(ticker, duration) {
     console.log("Requesting data for:", ticker, "Duration:", duration);
     
-    fetch("http://127.0.0.1:5000/get_stock_data", {  // Change URL if hosted
+    fetch("https://your-render-backend.onrender.com/get_stock_data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ticker: ticker, duration: duration })
