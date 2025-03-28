@@ -17,10 +17,15 @@ CORS(app)  # Enable Cross-Origin Resource Sharing for frontend requests
 import os
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 chatbot = genai.GenerativeModel("gemini-1.5-pro")
+from gtts import gTTS
+import os
 
-# Initialize Text-to-Speech Engine
-engine = pyttsx3.init()
-engine.setProperty('rate', 150)  # Adjust speaking speed
+def speak_full_text(text):
+    """Convert text to speech using gTTS and play it."""
+    tts = gTTS(text=text, lang="en")
+    tts.save("output.mp3")
+    os.system("mpg321 output.mp3")  # Use 'afplay' for Mac or 'mpg321' for Linux
+
 
 # Global variable to store document text (for context in queries)
 document_text = ""
