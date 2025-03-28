@@ -14,7 +14,8 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)  # Enable Cross-Origin Resource Sharing for frontend requests
 
 # Configure Gemini AI
-genai.configure(api_key="AIzaSyBlLc0JGB6RY2W3fY9Ng1gWPac97OPCpKU")
+import os
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 chatbot = genai.GenerativeModel("gemini-1.5-pro")
 
 # Initialize Text-to-Speech Engine
