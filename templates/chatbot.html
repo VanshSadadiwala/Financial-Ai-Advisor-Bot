@@ -224,6 +224,15 @@
   document.getElementById("userInput").value = "";
   chatbox.scrollTop = chatbox.scrollHeight;
 
+  // Show typing indicator
+  let botMessageP = document.createElement('p');
+  botMessageP.className = 'botText';
+  let botMessageSpan = document.createElement('span');
+  botMessageSpan.textContent = "Typing...";
+  botMessageP.appendChild(botMessageSpan);
+  chatbox.appendChild(botMessageP);
+  chatbox.scrollTop = chatbox.scrollHeight;
+
   try {
     let response = await fetch("http://127.0.0.1:5000/chat", {
       method: "POST",
@@ -232,24 +241,26 @@
     });
     let data = await response.json();
     
-    // Create bot message
-    let botMessageP = document.createElement('p');
-    botMessageP.className = 'botText';
-    let botMessageSpan = document.createElement('span');
+    // Format response with line breaks
+    let formattedResponse = data.response.replace(/\n/g, "<br>");
     
-    // Format response with line breaks if needed
-    botMessageSpan.innerHTML = data.response.replace(/\n/g, "<br>");
+    // Typing effect: Display word by word
+    botMessageSpan.innerHTML = "";
+    let words = formattedResponse.split(" ");
+    let i = 0;
     
-    botMessageP.appendChild(botMessageSpan);
-    chatbox.appendChild(botMessageP);
+    function typeEffect() {
+      if (i < words.length) {
+        botMessageSpan.innerHTML += words[i] + " ";
+        i++;
+        chatbox.scrollTop = chatbox.scrollHeight;
+        setTimeout(typeEffect, 50); // Adjust speed here
+      }
+    }
+    
+    typeEffect();
   } catch (error) {
-    // Create error message
-    let botMessageP = document.createElement('p');
-    botMessageP.className = 'botText';
-    let botMessageSpan = document.createElement('span');
     botMessageSpan.textContent = "Error contacting AI";
-    botMessageP.appendChild(botMessageSpan);
-    chatbox.appendChild(botMessageP);
   }
   
   chatbox.scrollTop = chatbox.scrollHeight;
@@ -273,33 +284,71 @@
   }
 
   let isSpeaking = false; // Track if speech is active
-let utterance = null; // Store utterance for reference
+  let audioPlayer = null; // Store audio player for reference
 
-function speakText() {
-  if (isSpeaking) {
-    window.speechSynthesis.cancel(); // Stop speaking if already speaking
-    isSpeaking = false;
-    return; // Exit function
+  async function speakText() {
+    if (isSpeaking) {
+      if (audioPlayer) {
+        audioPlayer.pause();
+        audioPlayer = null;
+      }
+      isSpeaking = false;
+      return; // Exit function
+    }
+
+    let chatbox = document.getElementById("chatbox");
+    let botMessages = chatbox.getElementsByClassName("botText");
+
+    if (botMessages.length > 0) {
+      let lastMessage = botMessages[botMessages.length - 1].innerText;
+      
+      try {
+        // Show speaking indicator
+        let speakerBtn = document.getElementById("speakerButton");
+        let originalIcon = speakerBtn.innerHTML;
+        speakerBtn.innerHTML = `<img src="../icon/speaking_icon.png" alt="Speaking">`;
+        
+        // Call the backend to generate speech
+        let response = await fetch("http://127.0.0.1:5000/speak", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: lastMessage })
+        });
+        
+        let data = await response.json();
+        
+        if (data.success && data.file) {
+          // Create and play audio
+          audioPlayer = new Audio(data.file);
+          
+          audioPlayer.onended = function() {
+            isSpeaking = false;
+            speakerBtn.innerHTML = originalIcon;
+            audioPlayer = null;
+          };
+          
+          audioPlayer.onerror = function() {
+            isSpeaking = false;
+            speakerBtn.innerHTML = originalIcon;
+            audioPlayer = null;
+            alert("Error playing audio.");
+          };
+          
+          audioPlayer.play();
+          isSpeaking = true;
+        } else {
+          speakerBtn.innerHTML = originalIcon;
+          alert("Error generating speech.");
+        }
+      } catch (error) {
+        isSpeaking = false;
+        alert("Error with text-to-speech: " + error.message);
+      }
+    } else {
+      alert("No bot message to speak.");
+    }
   }
 
-  let chatbox = document.getElementById("chatbox");
-  let botMessages = chatbox.getElementsByClassName("botText");
-
-  if (botMessages.length > 0) {
-    let lastMessage = botMessages[botMessages.length - 1].innerText;
-
-    utterance = new SpeechSynthesisUtterance(lastMessage);
-
-    utterance.onend = function () {
-      isSpeaking = false; // Reset when speech ends
-    };
-
-    window.speechSynthesis.speak(utterance);
-    isSpeaking = true;
-  } else {
-    alert("No bot message to speak.");
-  }
-}
 document.getElementById("uploadButton").addEventListener("click", function () {
   let input = document.createElement("input");
   input.type = "file";
@@ -334,56 +383,7 @@ document.getElementById("uploadButton").addEventListener("click", function () {
 
   input.click();
 });
-async function sendMessage() {
-  let userText = document.getElementById("userInput").value.trim();
-  if (!userText) return;
 
-  let chatbox = document.getElementById("chatbox");
-  chatbox.innerHTML += `<p class='userText'><span>${userText}</span></p>`;
-  document.getElementById("userInput").value = "";
-  chatbox.scrollTop = chatbox.scrollHeight;
-
-  // Show typing indicator
-  let botMessage = document.createElement("p");
-  botMessage.className = "botText";
-  let botSpan = document.createElement("span");
-  botSpan.innerHTML = "Typing...";
-  botMessage.appendChild(botSpan);
-  chatbox.appendChild(botMessage);
-  chatbox.scrollTop = chatbox.scrollHeight;
-
-  try {
-    let response = await fetch("http://127.0.0.1:5000/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userText })
-    });
-    let data = await response.json();
-    
-    let formattedResponse = data.response.replace(/\n/g, "<br>");
-    
-    // Typing effect: Display word by word
-    botSpan.innerHTML = "";
-    let words = formattedResponse.split(" ");
-    let i = 0;
-    
-    function typeEffect() {
-      if (i < words.length) {
-        botSpan.innerHTML += words[i] + " ";
-        i++;
-        chatbox.scrollTop = chatbox.scrollHeight;
-        setTimeout(typeEffect, 50); // Adjust speed here
-      }
-    }
-    
-    typeEffect();
-    
-  } catch {
-    botSpan.innerHTML = "Error contacting AI";
-  }
-
-  chatbox.scrollTop = chatbox.scrollHeight;
-}
 function clearChat() {
   const chatbox = document.getElementById("chatbox");
   chatbox.innerHTML = "";

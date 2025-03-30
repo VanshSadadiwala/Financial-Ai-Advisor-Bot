@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
-import pyttsx3
 import speech_recognition as sr
 import time
 import PyPDF2
@@ -10,6 +9,7 @@ import cv2
 import numpy as np
 from gtts import gTTS
 import os
+import tempfile
 
 # ----- Initialization -----
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -20,14 +20,13 @@ GEMINI_API_KEY = "AIzaSyCJJm5pBz2wL7C3bmykVDq_8Vo7hLQKBvc"  # Replace with your 
 genai.configure(api_key=GEMINI_API_KEY)
 chatbot = genai.GenerativeModel("gemini-1.5-pro")
 
-# Initialize text-to-speech engine
-engine = pyttsx3.init()
-
-def speak_full_text(text):
-    """Convert text to speech using gTTS and play it."""
-    tts = gTTS(text=text, lang="en")
-    tts.save("output.mp3")
-    os.system("mpg321 output.mp3")  # Use 'afplay' for Mac or 'mpg321' for Linux
+# Initialize text-to-speech functionality
+def text_to_speech(text):
+    """Convert text to speech using gTTS and return the filename."""
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_file:
+        tts = gTTS(text=text, lang="en", slow=False)
+        tts.save(temp_file.name)
+        return temp_file.name
 
 # Global variable to store document text (for context in queries)
 document_text = ""
@@ -107,6 +106,17 @@ def voice_input():
             return jsonify({"error": "Could not understand audio"}), 400
         except sr.RequestError:
             return jsonify({"error": "Speech recognition service unavailable"}), 500
+
+@app.route("/speak", methods=["POST"])
+def speak_text():
+    text = request.json.get("text", "")
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
+    try:
+        speech_file = text_to_speech(text)
+        return jsonify({"success": True, "file": speech_file})
+    except Exception as e:
+        return jsonify({"error": f"Error generating speech: {str(e)}"}), 500
 
 @app.route("/upload", methods=["POST"])
 def upload_document():
