@@ -28,6 +28,10 @@
       max-width: 950px;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      border: none;
     }
 
     .card-body {
@@ -54,6 +58,7 @@
   display: flex;
   align-items: center;
   margin: 5px 0;
+  animation: fadeIn 0.3s ease-in;
 }
 
 .botText span {
@@ -62,6 +67,7 @@
   border-radius: 8px;
   border-left: 4px solid blue;
   max-width: 70%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 /* User message styling */
@@ -69,6 +75,7 @@
   display: flex;
   justify-content: flex-end;
   margin: 5px 0;
+  animation: fadeIn 0.3s ease-in;
 }
 
 .userText span {
@@ -77,11 +84,18 @@
   padding: 10px;
   border-radius: 12px;
   max-width: 70%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
     .input-group {
       margin-top: auto;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
     }
 
     /* Buttons row */
@@ -89,23 +103,44 @@
       display: flex;
       justify-content: space-between;
       padding: 10px;
+      margin-top: 10px;
     }
 
     .icon-btn {
       background: none;
       border: none;
       cursor: pointer;
+      transition: transform 0.2s ease;
     }
+    
+    .icon-btn:hover {
+      transform: scale(1.1);
+    }
+    
     .left-buttons, .right-buttons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
     .icon-btn img {
       width: 32px;
       height: 32px;
+    }
+    
+    /* Card header styling */
+    .card-header {
+      padding: 15px;
+    }
+    
+    /* Button hover effects */
+    .btn {
+      transition: all 0.3s ease;
+    }
+    
+    .btn-outline-light:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: white;
     }
   </style>
 </head>
@@ -113,16 +148,23 @@
   <nav class="navbar navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="#">AI Chatbot</a>
-      <a class="btn btn-outline-light" href="../index.html">Back to Dashboard</a>
+      <a class="btn btn-outline-light" href="../index.html">Back to Home</a>
     </div>
   </nav>
 
   <div class="container">
     <div class="card">
-      <div class="card-header bg-primary text-white text-center">AI Chatbot</div>
+      <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">AI Chatbot</h5>
+          <button id="clearChatButton" class="btn btn-outline-light btn-sm" onclick="clearChat()">
+            <i class="fas fa-trash-alt me-1"></i>Clear Chat
+          </button>
+        </div>
+      </div>
       <div class="card-body">
         <div id="chatbox">
-          <p class="botText"><span>Hello! How can I assist you today?</span></p>
+          <!-- Initial welcome message will be added by JavaScript -->
         </div>
 
         <div class="input-group">
@@ -141,7 +183,6 @@
             </button>
           </div>
           <div class="right-buttons">
-            <button id="clearChatButton" class="btn btn-danger" onclick="clearChat()">Clear Chat</button>
             <button id="uploadButton" class="btn btn-secondary">Upload</button>
           </div>
         </div>
@@ -151,6 +192,17 @@
   </div>
 
   <script>
+    // Add initial welcome message
+    document.addEventListener("DOMContentLoaded", function() {
+      const chatbox = document.getElementById("chatbox");
+      let botMessageP = document.createElement('p');
+      botMessageP.className = 'botText';
+      let botMessageSpan = document.createElement('span');
+      botMessageSpan.textContent = "Hello! How can I assist you today?";
+      botMessageP.appendChild(botMessageSpan);
+      chatbox.appendChild(botMessageP);
+    });
+
     document.getElementById("userInput").addEventListener("keypress", function (event) {
       if (event.key === "Enter") sendMessage();
     });
@@ -160,7 +212,15 @@
   if (!userText) return;
   
   let chatbox = document.getElementById("chatbox");
-  chatbox.innerHTML += `<p class='userText'><span>${userText}</span></p>`;
+  
+  // Create user message
+  let userMessageP = document.createElement('p');
+  userMessageP.className = 'userText';
+  let userMessageSpan = document.createElement('span');
+  userMessageSpan.textContent = userText;
+  userMessageP.appendChild(userMessageSpan);
+  chatbox.appendChild(userMessageP);
+  
   document.getElementById("userInput").value = "";
   chatbox.scrollTop = chatbox.scrollHeight;
 
@@ -172,12 +232,24 @@
     });
     let data = await response.json();
     
-    // Format response with line breaks
-    let formattedResponse = data.response.replace(/\n/g, "<br>");
+    // Create bot message
+    let botMessageP = document.createElement('p');
+    botMessageP.className = 'botText';
+    let botMessageSpan = document.createElement('span');
     
-    chatbox.innerHTML += `<p class='botText'><span>${formattedResponse}</span></p>`;
-  } catch {
-    chatbox.innerHTML += `<p class='botText'><span>Error contacting AI</span></p>`;
+    // Format response with line breaks if needed
+    botMessageSpan.innerHTML = data.response.replace(/\n/g, "<br>");
+    
+    botMessageP.appendChild(botMessageSpan);
+    chatbox.appendChild(botMessageP);
+  } catch (error) {
+    // Create error message
+    let botMessageP = document.createElement('p');
+    botMessageP.className = 'botText';
+    let botMessageSpan = document.createElement('span');
+    botMessageSpan.textContent = "Error contacting AI";
+    botMessageP.appendChild(botMessageSpan);
+    chatbox.appendChild(botMessageP);
   }
   
   chatbox.scrollTop = chatbox.scrollHeight;
@@ -313,7 +385,16 @@ async function sendMessage() {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 function clearChat() {
-  document.getElementById("chatbox").innerHTML = "";
+  const chatbox = document.getElementById("chatbox");
+  chatbox.innerHTML = "";
+  
+  // Add a welcome message after clearing using DOM manipulation
+  let botMessageP = document.createElement('p');
+  botMessageP.className = 'botText';
+  let botMessageSpan = document.createElement('span');
+  botMessageSpan.textContent = "Chat cleared. How can I help you today?";
+  botMessageP.appendChild(botMessageSpan);
+  chatbox.appendChild(botMessageP);
 }
 
 

@@ -35,6 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.remove("dark-mode");
             localStorage.setItem("theme", "light");
         }
+        
+        // Re-render charts to update their colors
+        if (window.priceChart) window.priceChart.update();
+        if (window.volumeChart) window.volumeChart.update();
+        
+        // Update cards lighting
+        initDynamicCardLighting();
     }
 
     // Initialize the market overview chart
@@ -45,6 +52,23 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Initialize sidebar toggle (moved from nested DOMContentLoaded)
     initSidebarToggle();
+    
+    // ChatBot icon hover and animation effects
+    const chatBotIcon = document.getElementById("chatBotIcon");
+    if (chatBotIcon) {
+        // Add glow effect on hover
+        chatBotIcon.addEventListener("mouseenter", function() {
+            this.style.transform = "scale(1.1)";
+            this.style.boxShadow = "0 0 20px rgba(var(--accent-color-rgb), 0.7)";
+            this.style.animation = "chatbotHoverGlow 2s infinite alternate";
+        });
+        
+        chatBotIcon.addEventListener("mouseleave", function() {
+            this.style.transform = "scale(1)";
+            this.style.boxShadow = "0 0 10px rgba(var(--accent-color-rgb), 0.3)";
+            this.style.animation = "chatbotGlow 3s infinite alternate";
+        });
+    }
 });
 
 // Sidebar Clickable components
@@ -66,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const mainContent = document.getElementById("mainContent");
     const backToMainBtn = document.getElementById("backToMainBtn");
     const startChatBtn = document.getElementById("startChatBtn");
+    const sidebarStockAnalysis = document.getElementById("sidebarStockAnalysis");
 
     // Function to show stock dashboard
     function showStockDashboard() {
@@ -81,6 +106,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (stockAnalysisBtn) {
         stockAnalysisBtn.addEventListener("click", function () {
+            showStockDashboard();
+        });
+    }
+    
+    // Sidebar Stock Analysis button
+    if (sidebarStockAnalysis) {
+        sidebarStockAnalysis.addEventListener("click", function() {
             showStockDashboard();
         });
     }
@@ -112,26 +144,23 @@ document.addEventListener("DOMContentLoaded", function () {
     // Chat button functionality
     if (startChatBtn) {
         startChatBtn.addEventListener("click", function() {
-            // Redirect to chatbot page or show chat interface
-            window.location.href = "chatbot.html";
+            // Redirect to chatbot page
+            window.location.href = "templates/chatbot.html";
         });
     }
 
     // Load static stock charts on page load
     loadStockCharts();
     
-    // Handle sidebar navigation
-    document.querySelectorAll(".sidebar ul li").forEach(item => {
+    // Remove old sidebar click handler that duplicates functionality
+    // and update with active class management
+    const allSidebarItems = document.querySelectorAll(".sidebar ul li");
+    allSidebarItems.forEach(item => {
         item.addEventListener("click", function() {
-            const text = this.textContent.trim();
-            
-            if (text.includes("Stock Analysis")) {
-                stockDashboard.classList.remove("d-none");
-                if (mainContent) {
-                    mainContent.classList.add("d-none");
-                }
-                fetchLiveStockData();
-            }
+            // Remove active class from all items
+            allSidebarItems.forEach(i => i.classList.remove("active"));
+            // Add active class to clicked item
+            this.classList.add("active");
         });
     });
 
@@ -140,20 +169,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const aboutSection = document.getElementById('aboutSection');
     const backToMainFromAboutBtn = document.getElementById('backToMainFromAboutBtn');
 
-    aboutBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        mainContent.classList.add('d-none');
-        stockDashboard.classList.add('d-none');
-        aboutSection.classList.remove('d-none');
-        updateActiveNavLink('aboutBtn');
-    });
+    if (aboutBtn && aboutSection && backToMainFromAboutBtn) {
+        aboutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            mainContent.classList.add('d-none');
+            stockDashboard.classList.add('d-none');
+            aboutSection.classList.remove('d-none');
+            updateActiveNavLink('aboutBtn');
+        });
 
-    backToMainFromAboutBtn.addEventListener('click', function() {
-        mainContent.classList.remove('d-none');
-        stockDashboard.classList.add('d-none');
-        aboutSection.classList.add('d-none');
-        updateActiveNavLink('homeBtn');
-    });
+        backToMainFromAboutBtn.addEventListener('click', function() {
+            mainContent.classList.remove('d-none');
+            stockDashboard.classList.add('d-none');
+            aboutSection.classList.add('d-none');
+            updateActiveNavLink('homeBtn');
+        });
+    }
 
     // Update the updateActiveNavLink function to handle the About link
     function updateActiveNavLink(activeId) {
@@ -249,275 +280,149 @@ function updateChart(chart, labels, data) {
 
 // Function to Load Static Stock Charts
 function loadStockCharts() {
-    const stockChartEl = document.getElementById("stockChart");
-    const marketTrendsEl = document.getElementById("marketTrends");
-    
-    if (stockChartEl) {
-        const priceCtx = stockChartEl.getContext("2d");
-        new Chart(priceCtx, {
-            type: "line",
-            data: {
-                labels: ["10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM"],
-                datasets: [{
-                    label: "Stock Price",
-                    data: [210, 215, 218, 216, 220, 225],
-                    borderColor: "rgb(255, 99, 132)",
-                    fill: false
-                }]
-            }
-        });
-    }
-
-    if (marketTrendsEl) {
-        const trendCtx = marketTrendsEl.getContext("2d");
-        new Chart(trendCtx, {
-            type: "bar",
-            data: {
-                labels: ["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN"],
-                datasets: [{
-                    label: "Market Trend",
-                    data: [230, 240, 250, 235, 245],
-                    backgroundColor: ["blue", "green", "red", "orange", "purple"]
-                }]
-            }
-        });
-    }
-}
-
-// Chart Initialization for Real-Time Data
-let priceChart, volumeChart;
-
-document.addEventListener("DOMContentLoaded", function() {
-    const stockPriceChartEl = document.getElementById("stockPriceChart");
-    const stockVolumeChartEl = document.getElementById("stockVolumeChart");
-    
-    if (stockPriceChartEl) {
-        priceChart = new Chart(stockPriceChartEl.getContext("2d"), {
-            type: "line",
-            data: {
-                labels: [],
-                datasets: [{
-                    label: "Stock Price",
-                    data: [],
-                    borderColor: "#d63384",
-                    fill: false
-                }]
-            },
-            options: { responsive: true }
-        });
-    }
-    
-    if (stockVolumeChartEl) {
-        volumeChart = new Chart(stockVolumeChartEl.getContext("2d"), {
-            type: "bar",
-            data: {
-                labels: [],
-                datasets: [{
-                    label: "Stock Volume",
-                    data: [],
-                    backgroundColor: "#5F99AE"
-                }]
-            },
-            options: { responsive: true }
-        });
-    }
-});
-
-// Function to Send Message to Chatbot
-async function sendMessage() {
-    let userText = document.getElementById("userInput").value.trim();
-    if (userText === "") return;
-    let chatbox = document.getElementById("chatbox");
-    chatbox.innerHTML += `<p class='userText'><span>${userText}</span></p>`;
-    document.getElementById("userInput").value = "";
-    chatbox.scrollTop = chatbox.scrollHeight;
-
     try {
-        // Mock response for demonstration
-        const botResponses = [
-            "Mutual funds are investment vehicles that pool money from multiple investors to buy securities like stocks and bonds.",
-            "Index funds are a type of mutual fund that aims to track a specific market index like NIFTY 50 or SENSEX.",
-            "For beginners, I recommend starting with low-cost index funds and gradually diversifying your portfolio.",
-            "The best time to start investing is now. The power of compound interest works better the earlier you start.",
-            "A balanced portfolio typically includes a mix of stocks, bonds, and cash, with allocations based on your risk tolerance."
-        ];
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // In a real application, you would fetch from your API
-        // let response = await fetch("http://127.0.0.1:5000/chat", {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify({ message: userText }),
-        // });
-        // let data = await response.json();
-        
-        // Use random response for demo
-        const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
-        
-        chatbox.innerHTML += `<p class='botText'><span>${randomResponse}</span></p>`;
-        chatbox.scrollTop = chatbox.scrollHeight;
-    } catch (error) {
-        chatbox.innerHTML += `<p class='botText'><span>Error contacting AI</span></p>`;
-    }
-}
-
-// Function to initialize dynamic ambient lighting for cards
-function initDynamicCardLighting() {
-    // Get all three cards on main page
-    const welcomeCard = document.querySelector('.welcome-card');
-    const marketCard = document.querySelector('.main-content .row:nth-child(2) .col-md-6:first-child .card');
-    const insightsCard = document.querySelector('.main-content .row:nth-child(2) .col-md-6:last-child .card');
-    
-    // Get stock analysis cards with more specific selectors
-    const stockPriceCard = document.querySelector('#stockDashboard .row:first-child .col-md-6:first-child .card');
-    const marketComparisonCard = document.querySelector('#stockDashboard .row:first-child .col-md-6:last-child .card');
-    const realTimeCard = document.querySelector('#stockDashboard .row:nth-child(2) .col-md-6:first-child .card');
-    const volumeCard = document.querySelector('#stockDashboard .row:nth-child(2) .col-md-6:last-child .card');
-    
-    // Arrays of possible values
-    const hueAngles = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
-    const gradientAngles = ['0deg', '45deg', '90deg', '135deg', '180deg', '225deg', '270deg', '315deg'];
-    const gradientPositions = ['0% 50%', '100% 50%', '50% 0%', '50% 100%', '0% 0%', '100% 100%', '0% 100%', '100% 0%'];
-    
-    // Function to generate random RGBA color with specific opacity
-    function getRandomRGBA(opacity) {
-        const r = Math.floor(Math.random() * 255);
-        const g = Math.floor(Math.random() * 255);
-        const b = Math.floor(Math.random() * 255);
-        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-    }
-    
-    // Function to smoothly transition between values
-    function smoothTransition(element, property, targetValue, duration) {
-        // Store the current transition
-        const originalTransition = element.style.transition;
-        
-        // Set a specific transition for this property
-        element.style.transition = `${property} ${duration}ms cubic-bezier(0.4, 0.0, 0.2, 1)`;
-        
-        // Set the new value
-        element.style.setProperty(property, targetValue);
-        
-        // Reset to original transition after the duration
-        setTimeout(() => {
-            element.style.transition = originalTransition;
-        }, duration);
-    }
-    
-    // Function to update a card's lighting properties with smooth transitions
-    function updateCardLighting(card, intensity) {
-        if (!card) return;
-        
-        // Select random values
-        const randomHue = hueAngles[Math.floor(Math.random() * hueAngles.length)];
-        const randomAngle = gradientAngles[Math.floor(Math.random() * gradientAngles.length)];
-        const randomPos = gradientPositions[Math.floor(Math.random() * gradientPositions.length)];
-        
-        // Update CSS variables with smooth transitions
-        card.style.transition = `box-shadow 3s ease, transform 0.5s ease`;
-        card.style.setProperty('--card-gradient-angle', randomAngle);
-        card.style.setProperty('--card-gradient-pos', randomPos);
-        
-        // Subtle box shadow color change with smooth transition
-        const shadowOpacity = 0.1 + (Math.random() * 0.2); // Between 0.1 and 0.3
-        const shadowColor = getRandomRGBA(shadowOpacity * intensity);
-        card.style.boxShadow = `0 4px 15px ${shadowColor}`;
-        
-        // Always update the glow color for all cards
-        const glowOpacity = 0.1 + (Math.random() * 0.15); // Between 0.1 and 0.25
-        card.style.setProperty('--card-glow-color', getRandomRGBA(glowOpacity * intensity));
-    }
-    
-    // Function to initialize cards and set up intervals
-    function initializeCardEffects() {
-        // Re-query the cards to ensure we have the latest references
-        const stockPriceCard = document.querySelector('#stockDashboard .row:first-child .col-md-6:first-child .card');
-        const marketComparisonCard = document.querySelector('#stockDashboard .row:first-child .col-md-6:last-child .card');
-        const realTimeCard = document.querySelector('#stockDashboard .row:nth-child(2) .col-md-6:first-child .card');
-        const volumeCard = document.querySelector('#stockDashboard .row:nth-child(2) .col-md-6:last-child .card');
-        
-        // Initial update for main page cards
-        updateCardLighting(welcomeCard, 1);
-        updateCardLighting(marketCard, 0.8);
-        updateCardLighting(insightsCard, 0.9);
-        
-        // Initial update for stock analysis cards with the same intensity as home page
-        if (stockPriceCard) updateCardLighting(stockPriceCard, 1); // Match welcome card
-        if (marketComparisonCard) updateCardLighting(marketComparisonCard, 0.8); // Match market card
-        if (realTimeCard) updateCardLighting(realTimeCard, 0.9); // Match insights card
-        if (volumeCard) updateCardLighting(volumeCard, 1); // Match welcome card
-        
-        // Group cards to update together
-        const allCards = [
-            { element: welcomeCard, intensity: 1, interval: 8000 },
-            { element: marketCard, intensity: 0.8, interval: 12000 },
-            { element: insightsCard, intensity: 0.9, interval: 10000 },
-            { element: stockPriceCard, intensity: 1, interval: 8000 }, // Same as welcome card
-            { element: marketComparisonCard, intensity: 0.8, interval: 12000 }, // Same as market card
-            { element: realTimeCard, intensity: 0.9, interval: 10000 }, // Same as insights card
-            { element: volumeCard, intensity: 1, interval: 8000 } // Same as welcome card
-        ];
-        
-        // Clear any existing intervals
-        allCards.forEach(card => {
-            if (card.element && card.element._lightingInterval) {
-                clearInterval(card.element._lightingInterval);
-            }
-        });
-        
-        // Update each card with its designated interval
-        allCards.forEach(card => {
-            if (card.element) {
-                // Store the interval ID on the element itself for potential cleanup
-                card.element._lightingInterval = setInterval(() => {
-                    updateCardLighting(card.element, card.intensity);
-                }, card.interval);
-                
-                // Ensure immediate first update
-                updateCardLighting(card.element, card.intensity);
-            }
-        });
-    }
-    
-    // Initial call to set up cards
-    initializeCardEffects();
-    
-    // Setup observer to handle stock dashboard appearing after DOM load
-    const dashboardObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                const target = mutation.target;
-                if (target.id === 'stockDashboard' && !target.classList.contains('d-none')) {
-                    // When stock dashboard becomes visible, initialize card effects
-                    setTimeout(initializeCardEffects, 500); // Give a slight delay for DOM to fully update
+        // Stock Chart
+        const stockCtx = document.getElementById("stockChart");
+        if (stockCtx) {
+            const stockChart = new Chart(stockCtx, {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    datasets: [{
+                        label: "HDFC Bank",
+                        data: [1520, 1590, 1630, 1680, 1720, 1780],
+                        borderColor: "#5F99AE",
+                        backgroundColor: "rgba(95, 153, 174, 0.1)",
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'HDFC Bank Stock Price (2023)'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
                 }
-            }
-        });
-    });
-    
-    // Start observing the stock dashboard for visibility changes
-    const stockDashboard = document.getElementById('stockDashboard');
-    if (stockDashboard) {
-        dashboardObserver.observe(stockDashboard, { attributes: true });
-        
-        // If dashboard is already visible, initialize effects
-        if (!stockDashboard.classList.contains('d-none')) {
-            setTimeout(initializeCardEffects, 500);
+            });
         }
+
+        // Market Trends
+        const marketCtx = document.getElementById("marketTrends");
+        if (marketCtx) {
+            const marketChart = new Chart(marketCtx, {
+                type: "line",
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    datasets: [{
+                        label: "HDFC Bank",
+                        data: [1520, 1590, 1630, 1680, 1720, 1780],
+                        borderColor: "#5F99AE",
+                        tension: 0.4
+                    }, {
+                        label: "ICICI Bank",
+                        data: [940, 980, 1020, 1050, 1110, 1150],
+                        borderColor: "#d63384",
+                        tension: 0.4
+                    }, {
+                        label: "SBI",
+                        data: [620, 650, 690, 710, 740, 780],
+                        borderColor: "#fd7e14",
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Banking Sector Comparison'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize real-time price chart
+        const priceCtx = document.getElementById("stockPriceChart");
+        if (priceCtx) {
+            window.priceChart = new Chart(priceCtx, {
+                type: "line",
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: "HDFC Bank Price",
+                        data: [],
+                        borderColor: "#d63384",
+                        backgroundColor: "rgba(214, 51, 132, 0.1)",
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: {
+                        duration: 500
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Real-Time Price Movement'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize volume chart
+        const volumeCtx = document.getElementById("stockVolumeChart");
+        if (volumeCtx) {
+            window.volumeChart = new Chart(volumeCtx, {
+                type: "bar",
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: "Trading Volume",
+                        data: [],
+                        backgroundColor: "rgba(95, 153, 174, 0.6)",
+                        borderColor: "#5F99AE",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: {
+                        duration: 500
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Trading Volume'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Error initializing charts:", error);
     }
-    
-    // Handle click events that might show the stock dashboard
-    document.addEventListener('click', (event) => {
-        const clickedElement = event.target;
-        if (clickedElement.id === 'stockAnalysisbtn' || 
-            (clickedElement.closest('.sidebar ul li') && 
-             clickedElement.textContent.includes('Stock Analysis'))) {
-            // Stock analysis view is being shown, reinitialize effects
-            setTimeout(initializeCardEffects, 500);
-        }
-    });
 }
 
 // Mobile sidebar toggle

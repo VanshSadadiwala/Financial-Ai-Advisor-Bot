@@ -31,7 +31,7 @@
         </div>
         <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" href="index.html" id="homeBtn">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="#" id="aboutBtn">About</a></li>
                 <!-- Mobile-only nav items -->
                 <li class="nav-item d-lg-none"><a class="nav-link" href="#" id="mobileStockBtn">Stock Analysis</a></li>
@@ -52,10 +52,10 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-            <li><i class="fas fa-chart-line"></i> Stock Analysis</li>
+            <li id="sidebarStockAnalysis"><i class="fas fa-chart-line"></i> Stock Analysis</li>
             <li><a class="nav-link" href="templates/Analysis.html"><i class="fas fa-chart-line"></i> Real TIME Analysis</a></li>
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
-            <li><a href="https://www.google.com/finance/?hl=en"><i class="material-icons">attach_money</i> Google Finance</a></li>
+            <li><a href="https://www.google.com/finance/?hl=en" target="_blank"><i class="material-icons">attach_money</i> Google Finance</a></li>
             <li><a class="nav-link" href="templates/chatbot.html"><i class="fas fa-robot"></i> AI Chatbot</a></li>
         </ul>
     </div>
@@ -70,7 +70,7 @@
                             <h2>Welcome to FinAI</h2>
                             <p>Your intelligent financial assistant powered by AI. Ask questions, get investment advice, and improve your financial literacy.</p>
                             <div class="quick-actions">
-                                <button class="btn btn-primary" id="startChatBtn">Chat with AI</button>
+                                <a href="templates/chatbot.html" class="btn btn-primary" id="startChatBtn">Chat with AI</a>
                                 <button class="btn btn-outline-primary" id="stockAnalysisbtn">Analyze Stocks</button>
                             </div>
                         </div>
@@ -265,9 +265,9 @@
 
 <!-- Floating Chatbot Icon -->
 <div class="chat-icon-container">
-    <button id="chatBotIcon" class="btn-chat-icon">
+    <a href="templates/chatbot.html" id="chatBotIcon" class="btn-chat-icon">
         <i class="fas fa-robot"></i>
-    </button>
+    </a>
 </div>
 
 <!-- Bootstrap JS -->
