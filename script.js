@@ -84,13 +84,95 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Initialize theme from localStorage
+    const currentTheme = localStorage.getItem("theme");
+    if (currentTheme === "dark") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("themeToggle").checked = true;
+        if (document.getElementById("themeToggleMobile")) {
+            document.getElementById("themeToggleMobile").checked = true;
+        }
+    }
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById("themeToggle");
+    const themeToggleMobile = document.getElementById("themeToggleMobile");
+    const themeToggleSidebar = document.querySelector(".theme-toggle-sidebar");
+    
+    if (themeToggle) {
+        themeToggle.addEventListener("change", function() {
+            toggleTheme();
+        });
+    }
+    
+    if (themeToggleMobile) {
+        themeToggleMobile.addEventListener("change", function() {
+            toggleTheme();
+        });
+    }
+    
+    if (themeToggleSidebar) {
+        themeToggleSidebar.addEventListener("click", function() {
+            toggleTheme();
+        });
+    }
+    
+    function toggleTheme() {
+        if (document.body.classList.contains("dark-mode")) {
+            document.body.classList.remove("dark-mode");
+            localStorage.setItem("theme", "light");
+            if (themeToggle) themeToggle.checked = false;
+            if (themeToggleMobile) themeToggleMobile.checked = false;
+            if (themeToggleSidebar) {
+                themeToggleSidebar.querySelector("i").classList.remove("fa-sun");
+                themeToggleSidebar.querySelector("i").classList.add("fa-moon");
+            }
+        } else {
+            document.body.classList.add("dark-mode");
+            localStorage.setItem("theme", "dark");
+            if (themeToggle) themeToggle.checked = true;
+            if (themeToggleMobile) themeToggleMobile.checked = true;
+            if (themeToggleSidebar) {
+                themeToggleSidebar.querySelector("i").classList.remove("fa-moon");
+                themeToggleSidebar.querySelector("i").classList.add("fa-sun");
+            }
+        }
+    }
+
+    // Sidebar toggle for mobile view
+    const navbarToggler = document.querySelector(".navbar-toggler");
+    const sidebar = document.querySelector(".sidebar");
+    
+    if (navbarToggler && sidebar) {
+        navbarToggler.addEventListener("click", function() {
+            sidebar.classList.toggle("active");
+        });
+    }
+    
+    // Set the active sidebar item based on current page
+    const currentPage = window.location.pathname.split("/").pop();
+    const sidebarItems = document.querySelectorAll(".sidebar-item");
+    
+    sidebarItems.forEach(item => {
+        const link = item.querySelector("a").getAttribute("href");
+        if (link === currentPage || (currentPage === "" && link === "index.html")) {
+            item.classList.add("active");
+        } else {
+            item.classList.remove("active");
+        }
+    });
+
+    // Button event handlers
     const stockAnalysisBtn = document.getElementById("stockAnalysisbtn");
     const mobileStockBtn = document.getElementById("mobileStockBtn");
     const stockDashboard = document.getElementById("stockDashboard");
     const mainContent = document.getElementById("mainContent");
     const backToMainBtn = document.getElementById("backToMainBtn");
     const startChatBtn = document.getElementById("startChatBtn");
-    const sidebarStockAnalysis = document.getElementById("sidebarStockAnalysis");
+    const aboutBtn = document.getElementById("aboutBtn");
+    const aboutSection = document.getElementById("aboutSection");
+    const backToMainFromAboutBtn = document.getElementById("backToMainFromAboutBtn");
+    const homeBtn = document.getElementById("homeBtn");
 
     // Function to show stock dashboard
     function showStockDashboard() {
@@ -123,72 +205,310 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-
-    // Back button functionality
+    
+    // Back to Main button
     if (backToMainBtn) {
         backToMainBtn.addEventListener("click", function() {
-            stockDashboard.classList.add("d-none");
+            if (stockDashboard) {
+                stockDashboard.classList.add("d-none");
+            }
+            if (aboutSection) {
+                aboutSection.classList.add("d-none");
+            }
             if (mainContent) {
                 mainContent.classList.remove("d-none");
             }
         });
     }
     
-    // Chat button functionality
-    if (startChatBtn) {
-        startChatBtn.addEventListener("click", function() {
-            // Redirect to chatbot page
-            window.location.href = "templates/chatbot.html";
-        });
-    }
-
-    // Load static stock charts on page load
-    loadStockCharts();
-    
-    // Remove old sidebar click handler that duplicates functionality
-    // and update with active class management
-    const allSidebarItems = document.querySelectorAll(".sidebar ul li");
-    allSidebarItems.forEach(item => {
-        item.addEventListener("click", function() {
-            // Remove active class from all items
-            allSidebarItems.forEach(i => i.classList.remove("active"));
-            // Add active class to clicked item
-            this.classList.add("active");
-        });
-    });
-
-    // About section navigation
-    const aboutBtn = document.getElementById('aboutBtn');
-    const aboutSection = document.getElementById('aboutSection');
-    const backToMainFromAboutBtn = document.getElementById('backToMainFromAboutBtn');
-
-    if (aboutBtn && aboutSection && backToMainFromAboutBtn) {
-        aboutBtn.addEventListener('click', function(e) {
+    // About button
+    if (aboutBtn) {
+        aboutBtn.addEventListener("click", function(e) {
             e.preventDefault();
-            mainContent.classList.add('d-none');
-            stockDashboard.classList.add('d-none');
-            aboutSection.classList.remove('d-none');
-            updateActiveNavLink('aboutBtn');
-        });
-
-        backToMainFromAboutBtn.addEventListener('click', function() {
-            mainContent.classList.remove('d-none');
-            stockDashboard.classList.add('d-none');
-            aboutSection.classList.add('d-none');
-            updateActiveNavLink('homeBtn');
-        });
-    }
-
-    // Update the updateActiveNavLink function to handle the About link
-    function updateActiveNavLink(activeId) {
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.id === activeId) {
-                link.classList.add('active');
+            if (aboutSection) {
+                aboutSection.classList.remove("d-none");
+                if (mainContent) {
+                    mainContent.classList.add("d-none");
+                }
+                if (stockDashboard) {
+                    stockDashboard.classList.add("d-none");
+                }
+            }
+            
+            // If mobile, close the navbar after clicking
+            const navbarCollapse = document.querySelector('.navbar-collapse.show');
+            if (navbarCollapse) {
+                const navbarToggler = document.querySelector('.navbar-toggler');
+                if (navbarToggler) {
+                    navbarToggler.click();
+                }
+            }
+            
+            // Close sidebar on mobile if it's open
+            if (window.innerWidth < 992 && sidebar && sidebar.classList.contains("active")) {
+                sidebar.classList.remove("active");
             }
         });
     }
+    
+    // Back to Main from About button
+    if (backToMainFromAboutBtn) {
+        backToMainFromAboutBtn.addEventListener("click", function() {
+            if (aboutSection) {
+                aboutSection.classList.add("d-none");
+            }
+            if (mainContent) {
+                mainContent.classList.remove("d-none");
+            }
+        });
+    }
+    
+    // Home button
+    if (homeBtn) {
+        homeBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            if (stockDashboard) {
+                stockDashboard.classList.add("d-none");
+            }
+            if (aboutSection) {
+                aboutSection.classList.add("d-none");
+            }
+            if (mainContent) {
+                mainContent.classList.remove("d-none");
+            }
+        });
+    }
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener("click", function(e) {
+        if (window.innerWidth < 992 && sidebar && sidebar.classList.contains("active")) {
+            // Check if click is outside the sidebar
+            if (!sidebar.contains(e.target) && !navbarToggler.contains(e.target)) {
+                sidebar.classList.remove("active");
+            }
+        }
+    });
+
+    // Load static stock charts on page load
+    // This function initializes and populates the stock charts on the dashboard
+    function loadStockCharts() {
+        if (document.getElementById('stockChart')) {
+            // Stock price trend chart
+            const stockCtx = document.getElementById('stockChart').getContext('2d');
+            const stockChart = new Chart(stockCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'NIFTY 50',
+                        data: [17500, 17300, 17800, 18200, 18600, 19100, 19500, 19800, 20100, 20400, 20600, 20700],
+                        borderColor: '#5F99AE',
+                        backgroundColor: 'rgba(95, 153, 174, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                drawBorder: false,
+                                color: function(context) {
+                                    if (document.body.classList.contains('dark-mode')) {
+                                        return 'rgba(255, 255, 255, 0.1)';
+                                    } else {
+                                        return 'rgba(0, 0, 0, 0.1)';
+                                    }
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        if (document.getElementById('marketTrends')) {
+            // Market comparison chart
+            const marketCtx = document.getElementById('marketTrends').getContext('2d');
+            const marketChart = new Chart(marketCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'NIFTY 50',
+                        data: [100, 98, 102, 105, 108, 112, 115, 117, 120, 122, 123, 124],
+                        borderColor: '#5F99AE',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }, {
+                        label: 'SENSEX',
+                        data: [100, 99, 103, 107, 110, 114, 118, 120, 123, 125, 126, 127],
+                        borderColor: '#FF6B6B',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }, {
+                        label: 'BSE 500',
+                        data: [100, 97, 101, 104, 107, 110, 113, 115, 117, 119, 121, 122],
+                        borderColor: '#4ECDC4',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                drawBorder: false,
+                                color: function(context) {
+                                    if (document.body.classList.contains('dark-mode')) {
+                                        return 'rgba(255, 255, 255, 0.1)';
+                                    } else {
+                                        return 'rgba(0, 0, 0, 0.1)';
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Normalized Value (100 = Jan)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        if (document.getElementById('stockPriceChart')) {
+            // Real-time stock price chart
+            const realTimeCtx = document.getElementById('stockPriceChart').getContext('2d');
+            const realTimeChart = new Chart(realTimeCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: 'RELIANCE',
+                        data: [2830, 2835, 2838, 2840, 2843, 2847, 2850, 2855, 2860, 2858, 2855, 2852, 
+                               2854, 2856, 2860, 2858, 2862, 2865, 2868, 2870, 2872, 2875, 2878, 2880],
+                        borderColor: '#FF6B6B',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                drawBorder: false,
+                                color: function(context) {
+                                    if (document.body.classList.contains('dark-mode')) {
+                                        return 'rgba(255, 255, 255, 0.1)';
+                                    } else {
+                                        return 'rgba(0, 0, 0, 0.1)';
+                                    }
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        if (document.getElementById('stockVolumeChart')) {
+            // Trading volume chart
+            const volumeCtx = document.getElementById('stockVolumeChart').getContext('2d');
+            const volumeChart = new Chart(volumeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Trading Volume (millions)',
+                        data: [24.5, 22.3, 28.1, 26.9, 29.5, 31.2, 27.8, 30.5, 32.1, 33.8, 35.2, 36.7],
+                        backgroundColor: 'rgba(95, 153, 174, 0.7)',
+                        borderColor: '#5F99AE',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false,
+                                color: function(context) {
+                                    if (document.body.classList.contains('dark-mode')) {
+                                        return 'rgba(255, 255, 255, 0.1)';
+                                    } else {
+                                        return 'rgba(0, 0, 0, 0.1)';
+                                    }
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Call the loadStockCharts function to initialize charts
+    loadStockCharts();
 });
 
 // Chart Initialization: Add period selection functionality
@@ -349,153 +669,6 @@ function updateChart(chart, labels, data) {
         chart.data.labels = labels;
         chart.data.datasets[0].data = data;
         chart.update();
-    }
-}
-
-// Function to Load Static Stock Charts
-function loadStockCharts() {
-    try {
-        // Stock Chart
-        const stockCtx = document.getElementById("stockChart");
-        if (stockCtx) {
-            const stockChart = new Chart(stockCtx, {
-                type: "line",
-                data: {
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                    datasets: [{
-                        label: "HDFC Bank",
-                        data: [1520, 1590, 1630, 1680, 1720, 1780],
-                        borderColor: "#5F99AE",
-                        backgroundColor: "rgba(95, 153, 174, 0.1)",
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'HDFC Bank Stock Price (2023)'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false
-                        }
-                    }
-                }
-            });
-        }
-
-        // Market Trends
-        const marketCtx = document.getElementById("marketTrends");
-        if (marketCtx) {
-            const marketChart = new Chart(marketCtx, {
-                type: "line",
-                data: {
-                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                    datasets: [{
-                        label: "HDFC Bank",
-                        data: [1520, 1590, 1630, 1680, 1720, 1780],
-                        borderColor: "#5F99AE",
-                        tension: 0.4
-                    }, {
-                        label: "ICICI Bank",
-                        data: [940, 980, 1020, 1050, 1110, 1150],
-                        borderColor: "#d63384",
-                        tension: 0.4
-                    }, {
-                        label: "SBI",
-                        data: [620, 650, 690, 710, 740, 780],
-                        borderColor: "#fd7e14",
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Banking Sector Comparison'
-                        }
-                    }
-                }
-            });
-        }
-
-        // Initialize real-time price chart
-        const priceCtx = document.getElementById("stockPriceChart");
-        if (priceCtx) {
-            window.priceChart = new Chart(priceCtx, {
-                type: "line",
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: "HDFC Bank Price",
-                        data: [],
-                        borderColor: "#d63384",
-                        backgroundColor: "rgba(214, 51, 132, 0.1)",
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    animation: {
-                        duration: 500
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Real-Time Price Movement'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false
-                        }
-                    }
-                }
-            });
-        }
-
-        // Initialize volume chart
-        const volumeCtx = document.getElementById("stockVolumeChart");
-        if (volumeCtx) {
-            window.volumeChart = new Chart(volumeCtx, {
-                type: "bar",
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: "Trading Volume",
-                        data: [],
-                        backgroundColor: "rgba(95, 153, 174, 0.6)",
-                        borderColor: "#5F99AE",
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    animation: {
-                        duration: 500
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Trading Volume'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-    } catch (error) {
-        console.error("Error initializing charts:", error);
     }
 }
 

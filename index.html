@@ -52,12 +52,67 @@
 <div class="page-container">
     <!-- Sidebar -->
     <div class="sidebar">
-        <ul>
-            <li><a href="static/stockanalysis.html"><i class="fas fa-chart-line"></i> Stock Analysis</a></li>
-            <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
-            <li><a href="https://www.google.com/finance/?hl=en" target="_blank"><i class="material-icons">attach_money</i> Google Finance</a></li>
-            <li><a class="nav-link" href="templates/chatbot.html"><i class="fas fa-robot"></i> AI Chatbot</a></li>
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <span class="logo-icon"><i class="fas fa-chart-pie"></i></span>
+                <span class="logo-text">FinAI</span>
+            </div>
+        </div>
+        <div class="sidebar-divider">
+            <span>Main Navigation</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item active">
+                <a href="index.html">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="static/stockanalysis.html">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Stock Analysis</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="templates/chatbot.html">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Chatbot</span>
+                </a>
+            </li>
         </ul>
+        
+        <div class="sidebar-divider">
+            <span>External Resources</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="https://www.google.com/finance/?hl=en" target="_blank">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Google Finance</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="https://www.moneycontrol.com/" target="_blank">
+                    <i class="fas fa-globe"></i>
+                    <span>MoneyControl</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-item">
+                <a href="#" id="aboutBtn">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About</span>
+                </a>
+            </div>
+            <div class="sidebar-footer-item">
+                <div class="theme-toggle-sidebar">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Main Content Area -->
