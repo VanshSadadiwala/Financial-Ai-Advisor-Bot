@@ -943,6 +943,66 @@
             const stockInput = document.getElementById('stockInput');
             let mainChart, volumeChart, trendChart, rangeChart, forecastChart;
 
+            // Check URL hash for direct navigation
+            function checkUrlHash() {
+                const hash = window.location.hash.substring(1); // Remove the # symbol
+                if (hash === 'news') {
+                    // Activate news tab
+                    const newsTab = document.querySelector('.sidebar-item[data-target="newsContainer"]');
+                    if (newsTab) {
+                        activateTab(newsTab);
+                        document.title = "Financial News - StrangeFinance";
+                    }
+                }
+            }
+
+            // Call checkUrlHash on page load
+            checkUrlHash();
+
+            // Also check hash when it changes
+            window.addEventListener('hashchange', checkUrlHash);
+
+            // Function to activate a tab
+            function activateTab(tabElement) {
+                // Remove active class from all sidebar items
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to selected sidebar item
+                tabElement.classList.add('active');
+                
+                // Hide all content containers
+                document.querySelectorAll('.content-container').forEach(container => {
+                    container.classList.remove('active');
+                });
+                
+                // Show selected content container
+                const targetId = tabElement.getAttribute('data-target');
+                const targetContainer = document.getElementById(targetId);
+                if (targetContainer) {
+                    targetContainer.classList.add('active');
+                }
+                
+                // Update page title
+                const title = tabElement.getAttribute('data-title');
+                if (title) {
+                    navTitle.textContent = title;
+                }
+                
+                // Show/hide search container for Stock Analysis and Future Forecasting
+                if (targetId === 'stockAnalysisContainer' || targetId === 'futureForecastingContainer') {
+                    searchContainer.style.display = 'flex';
+                } else {
+                    searchContainer.style.display = 'none';
+                }
+                
+                // If it's the news tab, fetch and display news
+                if (targetId === 'newsContainer') {
+                    fetchAndDisplayNews();
+                }
+            }
+
             // Initialize all charts
             function initializeCharts() {
                 const tradingColors = {
@@ -1334,69 +1394,28 @@
                 }
             }
 
-            // Sidebar toggle functionality
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-            });
-
-            // Add click events to sidebar items
+            // Add click event listeners to sidebar items
             document.querySelectorAll('.sidebar-item').forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
-
-                    // Remove active class from all sidebar items
-                    document.querySelectorAll('.sidebar-item').forEach(sideItem => {
-                        sideItem.classList.remove('active');
-                    });
-
-                    // Add active class to clicked item
-                    this.classList.add('active');
-
-                    // Update navbar title
-                    const newTitle = this.getAttribute('data-title');
-                    navTitle.textContent = newTitle;
-
-                    // Hide all containers first
-                    document.querySelectorAll('.content-container').forEach(container => {
-                        container.classList.remove('active');
-                    });
-
-                    // Show selected container
-                    const targetId = this.getAttribute('data-target');
-                    const targetContainer = document.getElementById(targetId);
-                    targetContainer.classList.add('active');
-
-                    // Show/hide search container based on selected view
-                    if (targetId === 'stockAnalysisContainer') {
-                        searchContainer.style.display = 'flex';
-                    } else {
-                        searchContainer.style.display = 'none';
-                    }
-
-                    // Fetch news when news tab is clicked
-                    if (targetId === 'newsContainer') {
-                        fetchAndDisplayNews();
-                    }
-
-                    // Close sidebar after selection
-                    sidebar.classList.remove('active');
-                });
-            });
-
-            // Add event listeners for duration buttons
-            document.querySelectorAll('.buttons button').forEach(button => {
-                button.addEventListener('click', function () {
-                    // Remove active class from all buttons
-                    document.querySelectorAll('.buttons button').forEach(btn => btn.classList.remove('active-button'));
+                    activateTab(this);
                     
-                    // Add active class to the clicked button
-                    this.classList.add('active-button');
-
-                    // Update charts timeframe
-                    const period = this.getAttribute('data-interval');
-                    updateChartsTimeframe(period);
+                    // Update URL hash without scrolling
+                    const targetId = this.getAttribute('data-target');
+                    if (targetId === 'newsContainer') {
+                        history.replaceState(null, null, '#news');
+                    } else {
+                        history.replaceState(null, null, window.location.pathname);
+                    }
                 });
             });
+
+            // Toggle sidebar
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
 
             // Search functionality on Enter key or search icon click
             const searchIcon = document.querySelector('.search-icon');
@@ -1409,32 +1428,42 @@
             // Global function for onclick handlers in HTML buttons
             window.updateTimeframe = updateChartsTimeframe;
 
-
             // Add this function to fetch and display news
             async function fetchAndDisplayNews() {
                 try {
+                    const newsGrid = document.querySelector('.news-grid');
+                    if (!newsGrid) return;
+                    
+                    // Show loading message
+                    newsGrid.innerHTML = '<div style="text-align: center; padding: 20px; width: 100%;"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Loading latest financial news...</p></div>';
+                    
+                    // Fetch news from Finnhub API
                     const response = await fetch('https://finnhub.io/api/v1/news?category=general&token=cvm3r89r01qnndmbus70cvm3r89r01qnndmbus7g');
                     const newsData = await response.json();
                     
-                    const newsGrid = document.querySelector('.news-grid');
-                    newsGrid.innerHTML = ''; // Clear existing news
-
-                    newsData.forEach(news => {
-                        const newsCard = document.createElement('div');
-                        newsCard.className = 'news-card';
-                        
+                    // Clear the container
+                    newsGrid.innerHTML = '';
+                    
+                    // Display news items (up to 12)
+                    const displayNews = newsData.slice(0, 12);
+                    
+                    displayNews.forEach(news => {
                         // Convert Unix timestamp to readable date
                         const date = new Date(news.datetime * 1000).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
                         });
-
+                        
+                        // Create news card
+                        const newsCard = document.createElement('div');
+                        newsCard.className = 'news-card';
+                        
                         newsCard.innerHTML = `
-                            <img src="${news.image}" alt="${news.headline}" onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'">
+                            <img src="${news.image}" alt="${news.headline}" onerror="this.src='https://via.placeholder.com/400x200?text=Financial+News'">
                             <div class="news-content">
                                 <h3>${news.headline}</h3>
-                                <p>${news.summary}</p>
+                                <p>${news.summary.substring(0, 150)}...</p>
                                 <div class="news-meta">
                                     <span class="news-source">${news.source}</span>
                                     <span class="news-date">${date}</span>
@@ -1443,6 +1472,7 @@
                             </div>
                         `;
                         
+                        // Add to grid
                         newsGrid.appendChild(newsCard);
                     });
                 } catch (error) {

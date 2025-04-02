@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial News - StrangeFinance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../static/style.css">
+    <style>
+        body {
+            background-color: #020202; /* Almost black */
+            color: #e0e0e0; /* Light grey text for contrast */
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        /* Navbar styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #1a1a1a;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            gap: 20px;
+        }
+        
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .menu-toggle {
+            font-size: 24px;
+            cursor: pointer;
+            color: #fff;
+        }
+        
+        .nav-title {
+            font-size: clamp(18px, 4vw, 24px);
+            color: #fff;
+            margin: 0;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .nav-right .back-btn {
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #1a1a1a;
+            padding-top: 70px;
+            transition: 0.3s;
+            z-index: 999;
+        }
+        
+        .sidebar.active {
+            left: 0;
+        }
+        
+        .sidebar-item {
+            padding: 1rem 2rem;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            position: relative;
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(0, 255, 204, 0.1);
+        }
+        
+        .sidebar-item.active {
+            background-color: rgba(0, 255, 204, 0.2);
+            color: #00ffcc;
+        }
+
+        /* News Section Styles */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 80px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .news-card {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 255, 204, 0.2);
+        }
+
+        .news-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-content h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        .news-content p {
+            color: #ccc;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        .news-source {
+            color: #00ffcc;
+            font-weight: bold;
+        }
+
+        .news-date {
+            color: #888;
+        }
+
+        .read-more {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #00ffcc;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            align-self: flex-start;
+        }
+
+        .read-more:hover {
+            background-color: #00cc99;
+        }
+
+        .error-message {
+            color: #ff4444;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 80px;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            background-color: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background-color: rgba(0, 255, 204, 0.2);
+        }
+
+        .filter-btn.active {
+            background-color: #00ffcc;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <h1 id="navTitle" class="nav-title">Financial News</h1>
+        </div>
+        <div class="nav-right">
+            <a href="../index.html" class="back-btn">Back to Home</a>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="../index.html" class="sidebar-item">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="stocknews.html" class="sidebar-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Stock Analysis</span>
+        </a>
+        <a href="news.html" class="sidebar-item active">
+            <i class="fas fa-newspaper"></i>
+            <span>Financial News</span>
+        </a>
+        <a href="chatbot.html" class="sidebar-item">
+            <i class="fas fa-robot"></i>
+            <span>AI Chatbot</span>
+        </a>
+    </div>
+
+    <!-- Filter buttons -->
+    <div class="filter-container">
+        <button class="filter-btn active" data-category="all">All News</button>
+        <button class="filter-btn" data-category="markets">Markets</button>
+        <button class="filter-btn" data-category="economy">Economy</button>
+        <button class="filter-btn" data-category="business">Business</button>
+    </div>
+
+    <!-- Main content area -->
+    <div class="news-grid">
+        <!-- News cards will be dynamically inserted here -->
+        <div style="text-align: center; padding: 20px; grid-column: 1 / -1;">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Loading latest financial news...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            // Toggle sidebar
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            // Fetch and display news
+            fetchAndDisplayNews();
+            
+            // Set up filter buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Get category
+                    const category = this.getAttribute('data-category');
+                    
+                    // Filter news
+                    filterNews(category);
+                });
+            });
+
+            // Function to filter news by category
+            function filterNews(category) {
+                const newsCards = document.querySelectorAll('.news-card');
+                
+                if (category === 'all') {
+                    newsCards.forEach(card => {
+                        card.style.display = 'flex';
+                    });
+                    return;
+                }
+                
+                newsCards.forEach(card => {
+                    if (card.getAttribute('data-category') === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            // Function to fetch and display news
+            async function fetchAndDisplayNews() {
+                try {
+                    const newsGrid = document.querySelector('.news-grid');
+                    
+                    // Fetch news from Finnhub API
+                    const response = await fetch('https://finnhub.io/api/v1/news?category=general&token=cvm3r89r01qnndmbus70cvm3r89r01qnndmbus7g');
+                    const newsData = await response.json();
+                    
+                    // Clear the grid
+                    newsGrid.innerHTML = '';
+                    
+                    // Categories for random assignment
+                    const categories = ['markets', 'economy', 'business'];
+                    
+                    // Display news (up to 20 items)
+                    const displayNews = newsData.slice(0, 20);
+                    
+                    displayNews.forEach(news => {
+                        // Convert Unix timestamp to readable date
+                        const date = new Date(news.datetime * 1000).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        
+                        // Randomly assign a category for demonstration
+                        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+                        
+                        // Create news card
+                        const newsCard = document.createElement('div');
+                        newsCard.className = 'news-card';
+                        newsCard.setAttribute('data-category', randomCategory);
+                        
+                        newsCard.innerHTML = `
+                            <img src="${news.image}" alt="${news.headline}" onerror="this.src='https://via.placeholder.com/400x200?text=Financial+News'">
+                            <div class="news-content">
+                                <h3>${news.headline}</h3>
+                                <p>${news.summary.substring(0, 150)}...</p>
+                                <div class="news-meta">
+                                    <span class="news-source">${news.source}</span>
+                                    <span class="news-date">${date}</span>
+                                </div>
+                                <a href="${news.url}" target="_blank" class="read-more">Read More</a>
+                            </div>
+                        `;
+                        
+                        // Add to grid
+                        newsGrid.appendChild(newsCard);
+                    });
+                } catch (error) {
+                    console.error('Error fetching news:', error);
+                    document.querySelector('.news-grid').innerHTML = '<p class="error-message">Failed to load news. Please try again later.</p>';
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

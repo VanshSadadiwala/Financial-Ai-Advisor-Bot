@@ -484,7 +484,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-    }
+}
 
     // Call the loadStockCharts function to initialize charts
     loadStockCharts();
@@ -643,10 +643,88 @@ function filterNews(category) {
     });
 }
 
+// Function to fetch and display news from Finnhub API
+async function fetchAndDisplayNews() {
+    const newsContainer = document.querySelector('.news-carousel .row');
+    if (!newsContainer) return;
+    
+    try {
+        // Show loading state
+        newsContainer.innerHTML = '<div class="col-12 text-center"><p>Loading financial news...</p></div>';
+        
+        // Fetch news from Finnhub API
+        const response = await fetch('https://finnhub.io/api/v1/news?category=general&token=cvm3r89r01qnndmbus70cvm3r89r01qnndmbus7g');
+        const newsData = await response.json();
+        
+        // Clear the container
+        newsContainer.innerHTML = '';
+        
+        // Display top 3 news items
+        const topNews = newsData.slice(0, 3);
+        
+        topNews.forEach((news, index) => {
+            // Convert Unix timestamp to readable date
+            const date = new Date(news.datetime * 1000).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            // Create a column for each news item
+            const newsCol = document.createElement('div');
+            newsCol.className = 'col-md-4';
+            
+            // Create and populate the news item
+            const newsItem = document.createElement('div');
+            newsItem.className = 'news-item';
+            newsItem.dataset.category = index < 2 ? 'markets' : 'economy'; // Simple category assignment
+            newsItem.dataset.url = news.url; // Store the URL for click events
+            
+            newsItem.innerHTML = `
+                <div class="news-date">${date}</div>
+                <h6 class="news-title">${news.headline}</h6>
+                <p class="news-excerpt">${news.summary.substring(0, 100)}...</p>
+                <div class="news-source">Source: ${news.source}</div>
+            `;
+            
+            // Make entire news item clickable
+            newsItem.style.cursor = 'pointer';
+            newsItem.addEventListener('click', function() {
+                window.open(this.dataset.url, '_blank');
+            });
+            
+            // Add to the DOM
+            newsCol.appendChild(newsItem);
+            newsContainer.appendChild(newsCol);
+        });
+        
+        // Update category buttons to work with the new news items
+        document.querySelectorAll('.news-controls .btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.news-controls .btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterNews(this.dataset.category);
+            });
+        });
+        
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        newsContainer.innerHTML = '<div class="col-12 text-center"><p>Failed to load news. Please try again later.</p></div>';
+    }
+}
+
 // Function to initialize Market Overview Chart on the main page
 function initMarketOverviewChart() {
     // Implementation moved to static/chart.js
 }
+
+// Call fetchAndDisplayNews when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Existing code...
+    
+    // Fetch and display latest news
+    fetchAndDisplayNews();
+});
 
 // Function to Fetch Live Stock Data
 async function fetchLiveStockData() {
