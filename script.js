@@ -150,7 +150,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Button event handlers
-    const stockAnalysisBtn = document.getElementById("stockAnalysisbtn");
     const mobileStockBtn = document.getElementById("mobileStockBtn");
     const stockDashboard = document.getElementById("stockDashboard");
     const mainContent = document.getElementById("mainContent");
@@ -172,18 +171,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         fetchLiveStockData(); // Fetch live stock data dynamically
     }
-
-    if (stockAnalysisBtn) {
-        stockAnalysisBtn.addEventListener("click", function () {
-            showStockDashboard();
-        });
-    }
     
     // Mobile Stock Analysis button
     if (mobileStockBtn) {
         mobileStockBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-            showStockDashboard();
+            // The link now handles navigation directly
             // Close mobile navbar after clicking
             const navbarToggler = document.querySelector('.navbar-toggler');
             const navbarCollapse = document.querySelector('.navbar-collapse.show');
@@ -192,12 +184,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
-    
+
     // Back to Main button
     if (backToMainBtn) {
         backToMainBtn.addEventListener("click", function() {
             if (stockDashboard) {
-                stockDashboard.classList.add("d-none");
+            stockDashboard.classList.add("d-none");
             }
             if (aboutSection) {
                 aboutSection.classList.add("d-none");
@@ -253,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Home button
     if (homeBtn) {
         homeBtn.addEventListener("click", function(e) {
-            e.preventDefault();
+        e.preventDefault();
             if (stockDashboard) {
                 stockDashboard.classList.add("d-none");
             }
@@ -284,31 +276,31 @@ document.addEventListener("DOMContentLoaded", function () {
             const stockCtx = document.getElementById('stockChart').getContext('2d');
             const stockChart = new Chart(stockCtx, {
                 type: 'line',
-                data: {
+            data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
+                datasets: [{
                         label: 'NIFTY 50',
                         data: [17500, 17300, 17800, 18200, 18600, 19100, 19500, 19800, 20100, 20400, 20600, 20700],
                         borderColor: '#5F99AE',
                         backgroundColor: 'rgba(95, 153, 174, 0.1)',
                         borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
                         legend: {
                             display: false
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
-                        }
                     },
-                    scales: {
-                        y: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
                             beginAtZero: false,
                             grid: {
                                 drawBorder: false,
@@ -487,11 +479,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             grid: {
                                 display: false
                             }
-                        }
                     }
                 }
-            });
-        }
+            }
+        });
+    }
     }
 
     // Call the loadStockCharts function to initialize charts
