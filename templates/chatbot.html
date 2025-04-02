@@ -68,6 +68,7 @@
   border-left: 4px solid blue;
   max-width: 70%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  text-align: left;
 }
 
 /* User message styling */
@@ -85,6 +86,7 @@
   border-radius: 12px;
   max-width: 70%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: right;
 }
 
 @keyframes fadeIn {
@@ -131,6 +133,36 @@
     /* Card header styling */
     .card-header {
       padding: 15px;
+      text-align: center;
+    }
+    
+    .card-header h5 {
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    /* Input area styling */
+    .input-group {
+      margin-top: auto;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+    
+    .input-group .form-control {
+      border-radius: 20px 0 0 20px;
+      padding-left: 15px;
+    }
+    
+    .input-group .btn {
+      border-radius: 0 20px 20px 0;
+      padding-right: 20px;
+      padding-left: 20px;
+    }
+    
+    /* Typing indicator alignment */
+    .botText span.typing {
+      text-align: left;
+      min-width: 80px;
     }
     
     /* Button hover effects */
@@ -228,6 +260,7 @@
   let botMessageP = document.createElement('p');
   botMessageP.className = 'botText';
   let botMessageSpan = document.createElement('span');
+  botMessageSpan.className = 'typing';
   botMessageSpan.textContent = "Typing...";
   botMessageP.appendChild(botMessageSpan);
   chatbox.appendChild(botMessageP);

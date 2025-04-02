@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="static/style.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
 </head>
 <body>
 
@@ -35,7 +37,6 @@
                 <li class="nav-item"><a class="nav-link" href="#" id="aboutBtn">About</a></li>
                 <!-- Mobile-only nav items -->
                 <li class="nav-item d-lg-none"><a class="nav-link" href="#" id="mobileStockBtn">Stock Analysis</a></li>
-                <li class="nav-item d-lg-none"><a class="nav-link" href="templates/Analysis.html">Real TIME Analysis</a></li>
                 <li class="nav-item d-lg-none"><a class="nav-link" href="templates/chatbot.html">AI Chatbot</a></li>
             </ul>
             <div class="theme-switch d-none d-lg-block">
@@ -53,7 +54,6 @@
     <div class="sidebar">
         <ul>
             <li id="sidebarStockAnalysis"><i class="fas fa-chart-line"></i> Stock Analysis</li>
-            <li><a class="nav-link" href="templates/Analysis.html"><i class="fas fa-chart-line"></i> Real TIME Analysis</a></li>
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
             <li><a href="https://www.google.com/finance/?hl=en" target="_blank"><i class="material-icons">attach_money</i> Google Finance</a></li>
             <li><a class="nav-link" href="templates/chatbot.html"><i class="fas fa-robot"></i> AI Chatbot</a></li>
@@ -67,11 +67,29 @@
                 <div class="col-md-12">
                     <div class="card welcome-card">
                         <div class="card-body">
-                            <h2>Welcome to FinAI</h2>
-                            <p>Your intelligent financial assistant powered by AI. Ask questions, get investment advice, and improve your financial literacy.</p>
-                            <div class="quick-actions">
-                                <a href="templates/chatbot.html" class="btn btn-primary" id="startChatBtn">Chat with AI</a>
-                                <button class="btn btn-outline-primary" id="stockAnalysisbtn">Analyze Stocks</button>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h2 class="mb-3">Welcome to <span class="highlight-text">FinAI</span></h2>
+                                    <p class="lead mb-4">Your intelligent financial assistant powered by AI. Ask questions, get investment advice, and improve your financial literacy.</p>
+                                    <div class="features-list mb-4">
+                                        <div class="feature-item"><i class="fas fa-robot text-primary me-2"></i> AI-powered financial advice</div>
+                                        <div class="feature-item"><i class="fas fa-chart-line text-primary me-2"></i> Real-time market analysis</div>
+                                        <div class="feature-item"><i class="fas fa-graduation-cap text-primary me-2"></i> Financial education resources</div>
+                                    </div>
+                                    <div class="quick-actions">
+                                        <a href="templates/chatbot.html" class="btn btn-primary btn-lg" id="startChatBtn">
+                                            <i class="fas fa-comments me-2"></i>Chat with AI
+                                        </a>
+                                        <button class="btn btn-outline-primary btn-lg" id="stockAnalysisbtn">
+                                            <i class="fas fa-chart-bar me-2"></i>Analyze Stocks
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 d-none d-md-flex align-items-center justify-content-center">
+                                    <div class="welcome-illustration">
+                                        <i class="fas fa-chart-pie fa-6x text-primary animated-icon"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -79,28 +97,123 @@
             </div>
             
             <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Market Overview</h5>
+                <div class="col-md-6 mb-4">
+                    <div class="card market-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5><i class="fas fa-chart-line me-2"></i>Market Overview</h5>
+                            <div class="chart-controls">
+                                <button class="btn btn-sm btn-outline-secondary active" data-period="1w">1W</button>
+                                <button class="btn btn-sm btn-outline-secondary" data-period="1m">1M</button>
+                                <button class="btn btn-sm btn-outline-secondary" data-period="3m">3M</button>
+                            </div>
                         </div>
                         <div class="card-body">
                             <canvas id="marketOverviewChart"></canvas>
                         </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="row text-center market-stats">
+                                <div class="col">
+                                    <div class="stat-label">NIFTY 50</div>
+                                    <div class="stat-value up">20,706 <small>+0.8%</small></div>
+                                </div>
+                                <div class="col">
+                                    <div class="stat-label">SENSEX</div>
+                                    <div class="stat-value up">68,035 <small>+0.7%</small></div>
+                                </div>
+                                <div class="col">
+                                    <div class="stat-label">BSE 500</div>
+                                    <div class="stat-value down">30,210 <small>-0.2%</small></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Featured Insights</h5>
+                <div class="col-md-6 mb-4">
+                    <div class="card insights-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5><i class="fas fa-lightbulb me-2"></i>Featured Insights</h5>
+                            <span class="badge bg-primary">New</span>
                         </div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                <li class="list-group-item">Understanding Mutual Funds</li>
-                                <li class="list-group-item">Getting Started with Stock Investing</li>
-                                <li class="list-group-item">Retirement Planning Basics</li>
-                                <li class="list-group-item">Tax-Saving Investment Options</li>
+                        <div class="card-body p-0">
+                            <ul class="list-group insights-list">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <span class="insight-icon"><i class="fas fa-university"></i></span>
+                                    <div class="insight-content">
+                                        <h6>Understanding Mutual Funds</h6>
+                                        <p class="mb-0 text-muted">Learn the basics of mutual fund investments and strategies</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <span class="insight-icon"><i class="fas fa-chart-pie"></i></span>
+                                    <div class="insight-content">
+                                        <h6>Getting Started with Stock Investing</h6>
+                                        <p class="mb-0 text-muted">A beginner's guide to the stock market</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <span class="insight-icon"><i class="fas fa-wallet"></i></span>
+                                    <div class="insight-content">
+                                        <h6>Retirement Planning Basics</h6>
+                                        <p class="mb-0 text-muted">Essential strategies for long-term financial security</p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <span class="insight-icon"><i class="fas fa-hand-holding-usd"></i></span>
+                                    <div class="insight-content">
+                                        <h6>Tax-Saving Investment Options</h6>
+                                        <p class="mb-0 text-muted">Maximize returns while minimizing tax liability</p>
+                                    </div>
+                                </li>
                             </ul>
+                        </div>
+                        <div class="card-footer bg-transparent text-center">
+                            <button class="btn btn-sm btn-primary">View All Insights</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent News Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card news-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5><i class="fas fa-newspaper me-2"></i>Latest Financial News</h5>
+                            <div class="news-controls">
+                                <button class="btn btn-sm btn-outline-primary active" data-category="all">All</button>
+                                <button class="btn btn-sm btn-outline-primary" data-category="markets">Markets</button>
+                                <button class="btn btn-sm btn-outline-primary" data-category="economy">Economy</button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="news-carousel">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="news-item">
+                                            <div class="news-date">Apr 2, 2023</div>
+                                            <h6 class="news-title">RBI Keeps Repo Rate Unchanged at 6.5%</h6>
+                                            <p class="news-excerpt">The Reserve Bank of India (RBI) kept the repo rate unchanged at 6.5% for the fifth consecutive time...</p>
+                                            <div class="news-source">Source: Economic Times</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="news-item">
+                                            <div class="news-date">Apr 1, 2023</div>
+                                            <h6 class="news-title">Indian Stock Markets Hit New All-Time High</h6>
+                                            <p class="news-excerpt">The Sensex and Nifty reached new record highs today as foreign institutional investors...</p>
+                                            <div class="news-source">Source: Financial Express</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="news-item">
+                                            <div class="news-date">Mar 31, 2023</div>
+                                            <h6 class="news-title">New Tax Regulations Take Effect Today</h6>
+                                            <p class="news-excerpt">The new financial year brings several changes to the tax structure for both individuals and corporations...</p>
+                                            <div class="news-source">Source: Business Standard</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -274,5 +387,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <!-- Custom JS -->
 <script src="script.js"></script>
+<script src="static/chart.js"></script>
 </body>
 </html>

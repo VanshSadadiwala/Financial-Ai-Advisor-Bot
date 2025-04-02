@@ -249,28 +249,18 @@ input:checked+.slider:before {
 
 /* Welcome Card with ambient lighting */
 .welcome-card {
-    background-color: #F5F3FF;
-    border: none;
+    background-color: var(--card-bg);
     border-radius: 15px;
-    padding: 10px;
-    position: relative;
+    border: none;
+    box-shadow: 0 10px 30px rgba(var(--accent-color-rgb), 0.1);
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(var(--accent-color-rgb), 0.15);
-    animation: ambientPulse 8s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
-    --card-glow-color: rgba(var(--accent-color-rgb), 0.2);
-    --card-gradient-angle: 90deg;
-    --card-gradient-pos: 0% 50%;
-    transition: box-shadow 3s ease, transform 0.5s ease, --card-glow-color 3s ease, --card-gradient-angle 3s ease, --card-gradient-pos 3s ease;
-}
-
-.dark-mode .welcome-card {
-    background-color: #2A2A42;
-    box-shadow: 0 4px 15px rgba(var(--accent-color-rgb), 0.2);
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
 }
 
 .welcome-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(var(--accent-color-rgb), 0.25);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(var(--accent-color-rgb), 0.2);
 }
 
 .welcome-card::before {
@@ -279,32 +269,102 @@ input:checked+.slider:before {
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(var(--card-gradient-angle), var(--accent-color), var(--sidebar-bg), var(--accent-color));
-    background-size: 300% 300%;
-    background-position: var(--card-gradient-pos);
-    z-index: 1;
-    transition: background-position 1.5s ease;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color) 0%, var(--sidebar-bg) 100%);
 }
 
-.welcome-card:hover::before {
-    opacity: 0.9;
-    animation: gradientShift 2s linear infinite;
+.welcome-card .card-body {
+    padding: 2rem;
 }
 
-.welcome-card h2 {
+.highlight-text {
     color: var(--accent-color);
-    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(var(--card-border), 0.2);
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateX(5px);
+    color: var(--accent-color);
+}
+
+.feature-item i {
+    font-size: 1.2rem;
+    margin-right: 10px;
 }
 
 .quick-actions {
-    margin-top: 20px;
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
 }
 
-.quick-actions .btn {
-    margin-right: 10px;
-    border-radius: 30px;
-    padding: 8px 20px;
+.welcome-illustration {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    position: relative;
+}
+
+.animated-icon {
+    animation: floatAnimation 3s ease-in-out infinite;
+    color: var(--accent-color);
+    position: relative;
+}
+
+.animated-icon::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 10px;
+    background: radial-gradient(ellipse at center, rgba(var(--accent-color-rgb), 0.3) 0%, rgba(var(--accent-color-rgb), 0) 70%);
+    border-radius: 50%;
+    animation: shadowPulse 3s ease-in-out infinite;
+}
+
+@keyframes floatAnimation {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes shadowPulse {
+    0% {
+        opacity: 0.3;
+        width: 60%;
+    }
+    50% {
+        opacity: 0.5;
+        width: 40%;
+    }
+    100% {
+        opacity: 0.3;
+        width: 60%;
+    }
 }
 
 .list-group-item {
@@ -1485,4 +1545,189 @@ a.btn {
     align-items: center;
     justify-content: center;
     text-decoration: none;
+}
+
+/* Market Card */
+.market-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.market-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.chart-controls {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.chart-controls .btn {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.chart-controls .btn.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.market-stats {
+    padding: 0.5rem 0;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.stat-value small {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.stat-value.up {
+    color: #28a745;
+}
+
+.stat-value.down {
+    color: #dc3545;
+}
+
+/* Insights Card */
+.insights-card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.insights-list {
+    border-radius: 0;
+}
+
+.insights-list .list-group-item {
+    padding: 1rem;
+    border-left: none;
+    border-right: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.insights-list .list-group-item:hover {
+    background-color: rgba(var(--accent-color-rgb), 0.05);
+}
+
+.insights-list .list-group-item:first-child {
+    border-top: none;
+}
+
+.insights-list .list-group-item:last-child {
+    border-bottom: none;
+}
+
+.insight-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(var(--accent-color-rgb), 0.1);
+    border-radius: 8px;
+    color: var(--accent-color);
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.insight-content {
+    flex-grow: 1;
+}
+
+.insight-content h6 {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.insight-content p {
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+/* News Section */
+.news-card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.news-controls {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.news-carousel {
+    padding: 1.5rem;
+}
+
+.news-item {
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    height: 100%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.news-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.news-date {
+    font-size: 0.75rem;
+    color: var(--text-color);
+    opacity: 0.6;
+    margin-bottom: 0.5rem;
+}
+
+.news-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.news-excerpt {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.news-source {
+    font-size: 0.75rem;
+    color: var(--text-color);
+    opacity: 0.6;
+    font-style: italic;
 }

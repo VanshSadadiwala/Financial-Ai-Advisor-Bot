@@ -198,52 +198,133 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Function to initialize Market Overview Chart on the main page
-function initMarketOverviewChart() {
-    const marketOverviewEl = document.getElementById("marketOverviewChart");
-    
-    if (marketOverviewEl) {
-        const ctx = marketOverviewEl.getContext("2d");
-        new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                datasets: [{
-                    label: "NIFTY 50",
-                    data: [19200, 19500, 19800, 20100, 20400, 20700],
-                    borderColor: "#5F99AE",
-                    backgroundColor: "rgba(95, 153, 174, 0.1)",
-                    fill: true,
-                    tension: 0.4
-                }, {
-                    label: "SENSEX",
-                    data: [65000, 66000, 67000, 68000, 69000, 70000],
-                    borderColor: "#d63384",
-                    backgroundColor: "rgba(214, 51, 132, 0.1)",
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Indian Market Indices 2023'
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false
-                    }
-                }
-            }
+// Chart Initialization: Add period selection functionality
+document.addEventListener("DOMContentLoaded", function() {
+    // Initialize chart period buttons
+    const periodButtons = document.querySelectorAll('.chart-controls .btn');
+    if (periodButtons.length) {
+        periodButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                periodButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Update chart data based on period
+                const period = this.getAttribute('data-period');
+                updateChartPeriod(period);
+            });
         });
     }
+    
+    // Initialize news filter buttons
+    const newsButtons = document.querySelectorAll('.news-controls .btn');
+    if (newsButtons.length) {
+        newsButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                newsButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Filter news based on category
+                const category = this.getAttribute('data-category');
+                filterNews(category);
+            });
+        });
+    }
+    
+    // Make insights items clickable
+    const insightItems = document.querySelectorAll('.insights-list .list-group-item');
+    if (insightItems.length) {
+        insightItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const title = this.querySelector('h6').textContent;
+                alert('You clicked on: ' + title + '\nThis would open the full article in a real application.');
+            });
+        });
+    }
+    
+    // Make news items clickable
+    const newsItems = document.querySelectorAll('.news-item');
+    if (newsItems.length) {
+        newsItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const title = this.querySelector('.news-title').textContent;
+                alert('You clicked on: ' + title + '\nThis would open the full news article in a real application.');
+            });
+        });
+    }
+});
+
+// Function to update chart based on selected period
+function updateChartPeriod(period) {
+    const marketChart = window.marketOverviewChart;
+    if (!marketChart) return;
+    
+    // Simulate different data for different time periods
+    let newLabels, newData1, newData2;
+    
+    switch(period) {
+        case '1w':
+            newLabels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+            newData1 = [19800, 19950, 20100, 20300, 20700];
+            newData2 = [67000, 67500, 67800, 68200, 68500];
+            break;
+        case '1m':
+            newLabels = ["Week 1", "Week 2", "Week 3", "Week 4"];
+            newData1 = [19500, 19800, 20200, 20700];
+            newData2 = [66500, 67200, 67800, 68500];
+            break;
+        case '3m':
+            newLabels = ["Jan", "Feb", "Mar"];
+            newData1 = [19200, 19800, 20700];
+            newData2 = [65500, 67000, 68500];
+            break;
+        default:
+            newLabels = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+            newData1 = [19800, 19950, 20100, 20300, 20700];
+            newData2 = [67000, 67500, 67800, 68200, 68500];
+    }
+    
+    // Update chart data
+    marketChart.data.labels = newLabels;
+    marketChart.data.datasets[0].data = newData1;
+    marketChart.data.datasets[1].data = newData2;
+    marketChart.update();
+}
+
+// Function to filter news items by category
+function filterNews(category) {
+    const newsItems = document.querySelectorAll('.news-item');
+    if (!newsItems.length) return;
+    
+    if (category === 'all') {
+        newsItems.forEach(item => {
+            item.parentElement.style.display = 'block';
+        });
+        return;
+    }
+    
+    // Categories would normally be stored as data attributes on news items
+    // This is a simplified simulation
+    const categoryMap = {
+        'markets': [0, 1],  // indices of items in the markets category
+        'economy': [2]      // indices of items in the economy category
+    };
+    
+    newsItems.forEach((item, index) => {
+        if (categoryMap[category] && categoryMap[category].includes(index)) {
+            item.parentElement.style.display = 'block';
+        } else {
+            item.parentElement.style.display = 'none';
+        }
+    });
+}
+
+// Function to initialize Market Overview Chart on the main page
+function initMarketOverviewChart() {
+    // Implementation moved to static/chart.js
 }
 
 // Function to Fetch Live Stock Data
