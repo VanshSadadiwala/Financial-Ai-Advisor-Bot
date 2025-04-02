@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis | StrangeFinance</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="stockanalysis.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html"><span>Strange</span>Finance</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Stock Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../templates/chatbot.html">AI Chatbot</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <div class="theme-switch-wrapper">
+                            <label class="theme-switch" for="themeToggle">
+                                <input type="checkbox" id="themeToggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container py-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-4">Stock Market Analysis</h1>
+                
+                <!-- View controls -->
+                <div class="btn-toolbar mb-4" role="toolbar" aria-label="Time frequency toolbar">
+                    <div class="btn-group me-2" role="group" aria-label="Time view">
+                        <input type="radio" class="btn-check" name="timeView" id="dailyBtn" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="dailyBtn">Daily</label>
+                        
+                        <input type="radio" class="btn-check" name="timeView" id="weeklyBtn" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="weeklyBtn">Weekly</label>
+                        
+                        <input type="radio" class="btn-check" name="timeView" id="monthlyBtn" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="monthlyBtn">Monthly</label>
+        </div>
+                </div>
+                
+                <!-- Stock Lookup -->
+                <div class="stock-lookup">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Look up a stock</h5>
+                            <div class="input-group">
+                                <input type="text" id="stockSymbol" class="form-control" placeholder="Enter stock symbol (e.g., RELIANCE, HDFCBANK)" aria-label="Stock symbol">
+                                <button class="btn btn-primary" type="button" id="searchStock">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                            </div>
+                            <div class="stock-tags mt-3">
+                                <span class="stock-tag" data-symbol="RELIANCE">RELIANCE</span>
+                                <span class="stock-tag" data-symbol="HDFCBANK">HDFCBANK</span>
+                                <span class="stock-tag" data-symbol="TCS">TCS</span>
+                                <span class="stock-tag" data-symbol="INFY">INFY</span>
+                                <span class="stock-tag" data-symbol="TATAMOTORS">TATAMOTORS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </div>
+                
+        <!-- Stock Info and Price Chart -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="stock-header mb-4">
+                            <h2 id="stockName">Reliance Industries Ltd.</h2>
+                            <div class="stock-price-section">
+                                <div class="stock-price">₹2,870.00</div>
+                                <div class="stock-change up">+₹20.00 (+0.70%)</div>
+                </div>
+            </div>
+
+                        <!-- Chart Period Controls -->
+                        <div class="chart-controls">
+                            <button class="btn btn-sm btn-outline-primary active" data-period="1m">1M</button>
+                            <button class="btn btn-sm btn-outline-primary" data-period="3m">3M</button>
+                            <button class="btn btn-sm btn-outline-primary" data-period="6m">6M</button>
+                            <button class="btn btn-sm btn-outline-primary" data-period="1y">1Y</button>
+                </div>
+                        
+                        <!-- Stock Price Chart -->
+                        <div class="chart-container">
+                            <canvas id="stockChart"></canvas>
+                </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stock Overview and Trading Volume -->
+        <div class="row mb-4">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Overview</h5>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-label">Market Cap</div>
+                                <div class="metric-value">₹28.70T</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">P/E Ratio</div>
+                                <div class="metric-value">22.5</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">52W High</div>
+                                <div class="metric-value">₹3,000.50</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">52W Low</div>
+                                <div class="metric-value">₹2,520.25</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Dividend Yield</div>
+                                <div class="metric-value">0.85%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Avg. Volume</div>
+                                <div class="metric-value">2.3M</div>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Trading Volume</h5>
+                        <div class="chart-container">
+                            <canvas id="volumeChart"></canvas>
+                        </div>
+                    </div>
+    </div>
+        </div>
+        </div>
+        
+        <!-- Market Comparison and Financial Highlights -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Market Comparison</h5>
+                        <p class="text-muted">Relative performance to benchmark (normalized to 100)</p>
+        <div class="chart-container">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Financial Highlights</h5>
+                        
+                        <!-- Financial Data Tabs -->
+                        <ul class="nav nav-tabs" id="financialTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="income-tab" data-bs-toggle="tab" data-bs-target="#income" type="button" role="tab" aria-controls="income" aria-selected="true">Income Statement</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="balance-tab" data-bs-toggle="tab" data-bs-target="#balance" type="button" role="tab" aria-controls="balance" aria-selected="false">Balance Sheet</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="cashflow-tab" data-bs-toggle="tab" data-bs-target="#cashflow" type="button" role="tab" aria-controls="cashflow" aria-selected="false">Cash Flow</button>
+                            </li>
+                        </ul>
+                        
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="financialTabsContent">
+                            <!-- Income Statement Tab -->
+                            <div class="tab-pane fade show active" id="income" role="tabpanel" aria-labelledby="income-tab">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Metric</th>
+                                                <th>FY 2023</th>
+                                                <th>FY 2022</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Revenue</td>
+                                                <td>₹792,756 Cr</td>
+                                                <td>₹674,570 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>EBITDA</td>
+                                                <td>₹152,423 Cr</td>
+                                                <td>₹141,268 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Net Profit</td>
+                                                <td>₹66,702 Cr</td>
+                                                <td>₹60,705 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>EPS</td>
+                                                <td>₹98.52</td>
+                                                <td>₹89.69</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                </div>
+                            
+                            <!-- Balance Sheet Tab -->
+                            <div class="tab-pane fade" id="balance" role="tabpanel" aria-labelledby="balance-tab">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Metric</th>
+                                                <th>FY 2023</th>
+                                                <th>FY 2022</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Total Assets</td>
+                                                <td>₹1,520,326 Cr</td>
+                                                <td>₹1,402,936 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Liabilities</td>
+                                                <td>₹796,403 Cr</td>
+                                                <td>₹731,697 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Equity</td>
+                                                <td>₹723,923 Cr</td>
+                                                <td>₹671,239 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Book Value/Share</td>
+                                                <td>₹1,069.23</td>
+                                                <td>₹991.33</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                </div>
+                </div>
+                            
+                            <!-- Cash Flow Tab -->
+                            <div class="tab-pane fade" id="cashflow" role="tabpanel" aria-labelledby="cashflow-tab">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Metric</th>
+                                                <th>FY 2023</th>
+                                                <th>FY 2022</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Operating Cash Flow</td>
+                                                <td>₹128,237 Cr</td>
+                                                <td>₹118,463 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Investing Cash Flow</td>
+                                                <td>-₹74,502 Cr</td>
+                                                <td>-₹87,215 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Financing Cash Flow</td>
+                                                <td>-₹52,731 Cr</td>
+                                                <td>-₹30,982 Cr</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Free Cash Flow</td>
+                                                <td>₹53,735 Cr</td>
+                                                <td>₹31,248 Cr</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Chatbot Icon -->
+    <a href="../templates/chatbot.html" class="chat-icon">
+        <i class="fas fa-comments"></i>
+    </a>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Moment.js for date handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="stockanalysis.js"></script>
+</body>
+</html>
