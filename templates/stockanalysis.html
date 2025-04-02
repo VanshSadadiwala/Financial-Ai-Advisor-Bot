@@ -786,7 +786,7 @@
             <a href="../index.html" class="back-btn">
                 <i class="fas fa-arrow-left"></i> Back to Home
             </a>
-        </div>
+                </div>
     </nav>
 
     <div class="sidebar">
@@ -802,13 +802,13 @@
             <i class="fas fa-newspaper"></i>
             <span>News</span>
         </a>
-    </div>
-
+                </div>
+                
     <!-- Main content area -->
     <div class="search-container">
         <input type="text" id="stockInput" placeholder="Enter company name or ticker">
         <i class="fas fa-search search-icon"></i>
-    </div>
+            </div>
 
     <!-- Stock Analysis Container -->
     <div id="stockAnalysisContainer" class="content-container active">
@@ -824,9 +824,9 @@
             <button data-interval="1week" onclick="updateTimeframe('1week', null, '1year')">1 Year</button>
             <button data-interval="1month" onclick="updateTimeframe('1month', null, '4year')">4 Years</button>
             <button data-interval="1month" onclick="updateTimeframe('1month', null, '8year')">8 Years</button>
-        </div>
-        
-        <div class="chart-container">
+                </div>
+                        
+                        <div class="chart-container">
             <!-- Main Trading View Section -->
             <div class="trading-view">
                 <!-- Candlestick Chart -->
@@ -838,7 +838,7 @@
                 <div class="volume-chart">
                     <canvas id="volumeChart"></canvas>
                 </div>
-            </div>
+                </div>
 
             <!-- Secondary Charts Section -->
             <div class="secondary-charts">
@@ -850,43 +850,38 @@
                 <!-- Price Range Chart -->
                 <div class="range-chart">
                     <canvas id="rangeChart"></canvas>
-                </div>
             </div>
-
+        </div>
+        
             <!-- Stats Panel -->
             <div class="stats-panel">
                 <div class="stat-card">
                     <h3>Current Price</h3>
                     <p id="currentPrice">$0.00</p>
-                </div>
+                            </div>
                 <div class="stat-card">
                     <h3>Day's Range</h3>
                     <p id="dayRange">$0.00 - $0.00</p>
-                </div>
+                            </div>
                 <div class="stat-card">
                     <h3>Volume</h3>
                     <p id="volume">0</p>
-                </div>
+                            </div>
                 <div class="stat-card">
                     <h3>Change</h3>
                     <p id="priceChange">0.00%</p>
+                            </div>
+                            </div>
+                            </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
     <div class="loading">
         <div class="spinner"></div>
-    </div>
+            </div>
 
     <!-- --------------------------------------------------------------------------------------------------------------------- -->
     <!-- Future Forecasting Container -->
     <div id="futureForecastingContainer" class="content-container">
-        <div class="search-container">
-            <input type="text" id="forecastInput" placeholder="Enter company name or ticker for forecast">
-            <i class="fas fa-search forecast-search-icon"></i>
-        </div>
-
         <div class="forecast-buttons">
             <button data-interval="1min" onclick="updateTimeframe('1min')">1 Hour</button>
             <button data-interval="5min" onclick="updateTimeframe('5min', 'pre')">Pre Market</button>
@@ -899,41 +894,41 @@
             <button data-interval="1month" onclick="updateTimeframe('1month', null, '4year')">4 Years</button>
             <button data-interval="1month" onclick="updateTimeframe('1month', null, '8year')">8 Years</button>
         </div>
-        
-        <div class="chart-container">
+
+                        <div class="chart-container">
             <div class="main-chart">
                 <canvas id="forecastChart"></canvas>
-            </div>
+                        </div>
             
             <!-- Add stats panel for forecast -->
             <div class="stats-panel">
                 <div class="stat-card">
                     <h3>Predicted Price</h3>
                     <p id="predictedPrice">$0.00</p>
-                </div>
+                    </div>
                 <div class="stat-card">
                     <h3>Prediction Range</h3>
                     <p id="predictionRange">$0.00 - $0.00</p>
-                </div>
+    </div>
                 <div class="stat-card">
                     <h3>Confidence Level</h3>
                     <p id="confidenceLevel">0%</p>
-                </div>
+        </div>
                 <div class="stat-card">
                     <h3>Predicted Change</h3>
                     <p id="predictedChange">0.00%</p>
-                </div>
-            </div>
         </div>
+                        </div>
+                    </div>
     </div>
 
     <!-- News Container -->
     <div id="newsContainer" class="content-container">
         <div class="news-grid">
             <!-- News cards will be dynamically inserted here -->
-        </div>
-    </div>
-
+                </div>
+            </div>
+            
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.querySelector('.menu-toggle');
