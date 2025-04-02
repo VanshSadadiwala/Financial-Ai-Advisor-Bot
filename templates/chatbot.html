@@ -234,7 +234,7 @@
   chatbox.scrollTop = chatbox.scrollHeight;
 
   try {
-    let response = await fetch("/chat", {
+    let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: userText })
@@ -340,7 +340,7 @@ async function voiceInput() {
         console.log("Sending text for speech synthesis...");
         
         // Call the backend to generate speech
-        let response = await fetch("/speak", {
+        let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: lastMessage })
@@ -351,7 +351,7 @@ async function voiceInput() {
         
         if (data.success && data.audio_id) {
           // Create audio URL using the audio_id to access the server endpoint
-          const audioUrl = `/audio/${data.audio_id}`;
+          const audioUrl = `https://financial-ai-advisor-bot-1.onrender.com/audio/${data.audio_id}`;
           console.log("Playing audio from:", audioUrl);
           
           // Create and play audio
@@ -422,7 +422,7 @@ document.getElementById("uploadButton").addEventListener("click", function () {
         console.log("Uploading image for analysis");
         formData.append("image", file);
         
-        let response = await fetch("/analyze_graph", {
+        let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/analyze_graph", {
           method: "POST",
           body: formData
         });
@@ -449,7 +449,7 @@ document.getElementById("uploadButton").addEventListener("click", function () {
         console.log("Uploading document for context");
         formData.append("file", file);
         
-        let response = await fetch("/upload", {
+        let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/upload", {
           method: "POST",
           body: formData
         });
