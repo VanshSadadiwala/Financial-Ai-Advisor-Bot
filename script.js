@@ -110,13 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     
-    // Sidebar Stock Analysis button
-    if (sidebarStockAnalysis) {
-        sidebarStockAnalysis.addEventListener("click", function() {
-            showStockDashboard();
-        });
-    }
-    
     // Mobile Stock Analysis button
     if (mobileStockBtn) {
         mobileStockBtn.addEventListener("click", function (e) {
