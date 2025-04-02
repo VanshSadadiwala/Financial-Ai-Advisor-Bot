@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from flask_cors import CORS
 import google.generativeai as genai
 import speech_recognition as sr
@@ -107,16 +107,28 @@ def voice_input():
         except sr.RequestError:
             return jsonify({"error": "Speech recognition service unavailable"}), 500
 
+# Store temporary file paths
+active_audio_files = {}
+
 @app.route("/speak", methods=["POST"])
 def speak_text():
     text = request.json.get("text", "")
     if not text:
         return jsonify({"error": "No text provided"}), 400
     try:
+        # Generate unique ID for this audio
+        file_id = str(int(time.time()))
         speech_file = text_to_speech(text)
-        return jsonify({"success": True, "file": speech_file})
+        active_audio_files[file_id] = speech_file
+        return jsonify({"success": True, "audio_id": file_id})
     except Exception as e:
         return jsonify({"error": f"Error generating speech: {str(e)}"}), 500
+
+@app.route("/audio/<file_id>", methods=["GET"])
+def get_audio(file_id):
+    if file_id not in active_audio_files:
+        return jsonify({"error": "Audio file not found"}), 404
+    return send_file(active_audio_files[file_id], mimetype="audio/mpeg")
 
 @app.route("/upload", methods=["POST"])
 def upload_document():

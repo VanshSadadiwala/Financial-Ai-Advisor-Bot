@@ -267,21 +267,49 @@
 }
 
 
-    async function voiceInput() {
-    // Fetch recognized voice input from the backend /voice endpoint
-    try {
-      let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/voice");
-      let data = await response.json();
-      if (data.message) {
-        document.getElementById("userInput").value = data.message;
-        sendMessage();
-      } else if (data.error) {
-        alert(data.error);
-      }
-    } catch (error) {
-      alert("Error with voice input.");
-    }
+async function voiceInput() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert("Speech recognition not supported in this browser");
+    return;
   }
+  
+  try {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    
+    // Show recording indicator
+    const micButton = document.getElementById("micButton");
+    const originalIcon = micButton.innerHTML;
+    micButton.innerHTML = `<img src="../static/mic_icon.png" alt="Recording..." style="filter: brightness(1.5) sepia(1) hue-rotate(-50deg) saturate(5);">`;
+    
+    recognition.start();
+    
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      document.getElementById("userInput").value = transcript;
+      sendMessage();
+    };
+    
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error", event.error);
+      micButton.innerHTML = originalIcon;
+      alert("Error recognizing speech: " + event.error);
+    };
+    
+    recognition.onend = () => {
+      micButton.innerHTML = originalIcon;
+    };
+    
+  } catch (error) {
+    console.error("Voice input setup error:", error);
+    alert("Could not initialize speech recognition");
+  }
+}
+
 
   let isSpeaking = false; // Track if speech is active
   let audioPlayer = null; // Store audio player for reference
