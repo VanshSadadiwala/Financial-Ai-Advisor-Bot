@@ -172,14 +172,15 @@ input:checked+.slider:before {
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
+    padding-top: 0;
 }
 
 .sidebar-header {
-    padding: 1.5rem;
+    padding: 1.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
 }
 
 .sidebar-logo {
@@ -200,7 +201,7 @@ input:checked+.slider:before {
 }
 
 .sidebar-divider {
-    padding: 1rem 1.5rem 0.5rem;
+    padding: 0.7rem 1.5rem 0.4rem;
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -222,7 +223,7 @@ input:checked+.slider:before {
 .sidebar-menu {
     list-style: none;
     padding: 0;
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.7rem 0;
 }
 
 .sidebar-item {
@@ -232,7 +233,7 @@ input:checked+.slider:before {
 .sidebar-item a {
     display: flex;
     align-items: center;
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1.5rem;
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     transition: all 0.3s;
@@ -315,7 +316,7 @@ input:checked+.slider:before {
     justify-content: center;
     color: rgba(255, 255, 255, 0.7);
     background-color: rgba(255, 255, 255, 0.05);
-    margin: 0 1rem;
+    margin: 0 1rem 0.5rem 1rem;
     transition: all 0.3s ease;
 }
 
@@ -1966,4 +1967,84 @@ body.dark-mode .badge {
 body.dark-mode .social-link {
     background-color: #2a2e3b;
     color: #bbb;
+}
+
+/* Featured Insights styles */
+.insight-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.insight-item:hover {
+    background-color: rgba(95, 153, 174, 0.05);
+    transform: translateY(-2px);
+}
+
+.insight-item::after {
+    content: '\f054';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-color);
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.insight-item:hover::after {
+    opacity: 1;
+    right: 10px;
+}
+
+.insight-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(95, 153, 174, 0.1);
+    border-radius: 50%;
+    margin-right: 15px;
+    color: var(--primary-color);
+    transition: all 0.2s ease;
+}
+
+.insight-item:hover .insight-icon {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Modal styles */
+.modal-content {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* Dark mode styles for insights and modal */
+body.dark-mode .insight-item:hover {
+    background-color: rgba(95, 153, 174, 0.15);
+}
+
+body.dark-mode .modal-content {
+    background-color: #1e2130;
+    color: #e0e0e0;
+}
+
+body.dark-mode .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
 }

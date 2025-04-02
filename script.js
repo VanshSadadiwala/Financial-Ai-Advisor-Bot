@@ -496,6 +496,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Call the loadStockCharts function to initialize charts
     loadStockCharts();
+
+    // Insight Modal Functionality
+    const insightModal = document.getElementById('insightModal');
+    if (insightModal) {
+        insightModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            const insight = event.relatedTarget;
+            
+            // Extract info from data attributes
+            const title = insight.getAttribute('data-title');
+            const content = insight.getAttribute('data-content');
+            
+            // Update the modal's content
+            const modalTitle = insightModal.querySelector('.modal-title');
+            const modalContent = insightModal.querySelector('#insightContent');
+            
+            modalTitle.textContent = title;
+            modalContent.innerHTML = content;
+        });
+    }
+    
+    // Make insight items clickable
+    const insightItems = document.querySelectorAll('.insight-item');
+    insightItems.forEach(item => {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', function() {
+            // The modal is triggered by the data-bs-toggle and data-bs-target attributes
+        });
+    });
 });
 
 // Chart Initialization: Add period selection functionality

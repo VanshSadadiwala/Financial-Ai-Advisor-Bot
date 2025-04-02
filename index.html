@@ -53,12 +53,12 @@
             </div>
         </div>
         
-        <div class="theme-toggle-sidebar mt-3 mb-2 text-center">
+        <div class="theme-toggle-sidebar mt-2 mb-1 text-center">
             <i class="fas fa-moon"></i>
             <span>Dark Mode</span>
         </div>
         
-        <div class="sidebar-divider">
+        <div class="sidebar-divider mt-1">
             <span>Main Navigation</span>
         </div>
         <ul class="sidebar-menu">
@@ -177,28 +177,28 @@
                         </div>
                         <div class="card-body p-0">
                             <ul class="list-group insights-list">
-                                <li class="list-group-item d-flex align-items-center">
+                                <li class="list-group-item d-flex align-items-center insight-item" data-bs-toggle="modal" data-bs-target="#insightModal" data-title="Understanding Mutual Funds" data-content="Mutual funds are investment vehicles that pool money from multiple investors to purchase securities like stocks, bonds, and other assets. This diversified approach helps spread risk across various investments.<br><br>Key benefits include:<br>• Professional management by experienced fund managers<br>• Diversification across multiple securities<br>• Lower investment minimums compared to building a diverse portfolio individually<br>• Liquidity allowing investors to buy or sell shares on any business day<br><br>When investing in mutual funds, consider factors like expense ratios, fund management style, historical performance, and how the fund aligns with your financial goals.">
                                     <span class="insight-icon"><i class="fas fa-university"></i></span>
                                     <div class="insight-content">
                                         <h6>Understanding Mutual Funds</h6>
                                         <p class="mb-0 text-muted">Learn the basics of mutual fund investments and strategies</p>
                                     </div>
                                 </li>
-                                <li class="list-group-item d-flex align-items-center">
+                                <li class="list-group-item d-flex align-items-center insight-item" data-bs-toggle="modal" data-bs-target="#insightModal" data-title="Getting Started with Stock Investing" data-content="Stock investing allows you to purchase shares or ownership in publicly traded companies. As a shareholder, you participate in the company's growth and profits through price appreciation and dividends.<br><br>Important concepts for beginners:<br>• Market fundamentals: Understanding how stock markets function<br>• Research methods: Analyzing company financials and market trends<br>• Investment strategies: Value investing, growth investing, or dividend investing<br>• Risk management: Diversification and position sizing<br><br>Starting with a long-term perspective and focusing on quality companies with strong fundamentals can help beginners build wealth through stock investing.">
                                     <span class="insight-icon"><i class="fas fa-chart-pie"></i></span>
                                     <div class="insight-content">
                                         <h6>Getting Started with Stock Investing</h6>
                                         <p class="mb-0 text-muted">A beginner's guide to the stock market</p>
                                     </div>
                                 </li>
-                                <li class="list-group-item d-flex align-items-center">
+                                <li class="list-group-item d-flex align-items-center insight-item" data-bs-toggle="modal" data-bs-target="#insightModal" data-title="Retirement Planning Basics" data-content="Effective retirement planning involves creating a comprehensive strategy to ensure financial security during your retirement years.<br><br>Essential components include:<br>• Setting clear retirement goals and timelines<br>• Calculating your retirement needs based on expected lifestyle<br>• Building a diversified portfolio with appropriate risk levels<br>• Understanding tax-advantaged retirement accounts<br>• Creating a sustainable withdrawal strategy<br><br>The earlier you begin planning, the more time your investments have to grow through compound interest, potentially resulting in a more secure financial future.">
                                     <span class="insight-icon"><i class="fas fa-wallet"></i></span>
                                     <div class="insight-content">
                                         <h6>Retirement Planning Basics</h6>
                                         <p class="mb-0 text-muted">Essential strategies for long-term financial security</p>
                                     </div>
                                 </li>
-                                <li class="list-group-item d-flex align-items-center">
+                                <li class="list-group-item d-flex align-items-center insight-item" data-bs-toggle="modal" data-bs-target="#insightModal" data-title="Tax-Saving Investment Options" data-content="Strategic tax planning through investments can help you legally reduce your tax liability while building wealth.<br><br>Popular tax-saving investment options include:<br>• Tax-advantaged retirement accounts<br>• Government-sponsored saving schemes<br>• Insurance policies with tax benefits<br>• Municipal bonds with tax-exempt interest<br>• Tax-loss harvesting strategies<br><br>When selecting tax-saving investments, consider not just the tax benefits but also factors like liquidity, returns, and how they align with your overall financial goals.">
                                     <span class="insight-icon"><i class="fas fa-hand-holding-usd"></i></span>
                                     <div class="insight-content">
                                         <h6>Tax-Saving Investment Options</h6>
@@ -435,5 +435,23 @@
 <!-- Custom JS -->
 <script src="script.js"></script>
 <script src="static/chart.js"></script>
+
+<!-- Insight Modal -->
+<div class="modal fade" id="insightModal" tabindex="-1" aria-labelledby="insightModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="insightModalLabel">Insight Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="insightContent"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
