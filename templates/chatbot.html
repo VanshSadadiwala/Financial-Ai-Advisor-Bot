@@ -270,7 +270,7 @@
     async function voiceInput() {
     // Fetch recognized voice input from the backend /voice endpoint
     try {
-      let response = await fetch("http://127.0.0.1:5000/voice");
+      let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/voice");
       let data = await response.json();
       if (data.message) {
         document.getElementById("userInput").value = data.message;
@@ -309,7 +309,7 @@
         speakerBtn.innerHTML = `<img src="../static/speaker_icon.png" alt="Speaking">`;
         
         // Call the backend to generate speech
-        let response = await fetch("http://127.0.0.1:5000/speak", {
+        let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: lastMessage })
@@ -361,7 +361,7 @@ document.getElementById("uploadButton").addEventListener("click", function () {
     formData.append("image", file);
 
     try {
-      let response = await fetch("http://127.0.0.1:5000/upload", {
+      let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/upload", {
         method: "POST",
         body: formData
       });
