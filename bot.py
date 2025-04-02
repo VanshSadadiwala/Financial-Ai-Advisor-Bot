@@ -116,19 +116,45 @@ def speak_text():
     if not text:
         return jsonify({"error": "No text provided"}), 400
     try:
+        print(f"Generating speech for text: {text[:50]}...")
+        
         # Generate unique ID for this audio
         file_id = str(int(time.time()))
         speech_file = text_to_speech(text)
+        
+        # Verify the file exists
+        if not os.path.exists(speech_file):
+            raise Exception(f"Generated file {speech_file} does not exist")
+            
+        print(f"Generated speech file at: {speech_file}")
         active_audio_files[file_id] = speech_file
+        
         return jsonify({"success": True, "audio_id": file_id})
     except Exception as e:
+        import traceback
+        print(f"Error generating speech: {str(e)}")
+        traceback.print_exc()
         return jsonify({"error": f"Error generating speech: {str(e)}"}), 500
 
 @app.route("/audio/<file_id>", methods=["GET"])
 def get_audio(file_id):
-    if file_id not in active_audio_files:
-        return jsonify({"error": "Audio file not found"}), 404
-    return send_file(active_audio_files[file_id], mimetype="audio/mpeg")
+    try:
+        if file_id not in active_audio_files:
+            print(f"Audio file ID {file_id} not found. Available IDs: {list(active_audio_files.keys())}")
+            return jsonify({"error": "Audio file not found"}), 404
+            
+        filepath = active_audio_files[file_id]
+        if not os.path.exists(filepath):
+            print(f"Audio file {filepath} does not exist on disk")
+            return jsonify({"error": "Audio file not found on disk"}), 404
+            
+        print(f"Serving audio file: {filepath}")
+        return send_file(filepath, mimetype="audio/mpeg")
+    except Exception as e:
+        import traceback
+        print(f"Error serving audio: {str(e)}")
+        traceback.print_exc()
+        return jsonify({"error": f"Error serving audio: {str(e)}"}), 500
 
 @app.route("/upload", methods=["POST"])
 def upload_document():

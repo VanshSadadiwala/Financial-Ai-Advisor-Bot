@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Chatbot</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../static/style.css" />
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
     /* Full-screen layout */
@@ -234,7 +234,7 @@
   chatbox.scrollTop = chatbox.scrollHeight;
 
   try {
-    let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/chat", {
+    let response = await fetch("/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: userText })
@@ -321,6 +321,7 @@ async function voiceInput() {
         audioPlayer = null;
       }
       isSpeaking = false;
+      document.getElementById("speakerButton").innerHTML = `<img src="../static/speaker_icon.png" alt="Speaker">`;
       return; // Exit function
     }
 
@@ -336,41 +337,63 @@ async function voiceInput() {
         let originalIcon = speakerBtn.innerHTML;
         speakerBtn.innerHTML = `<img src="../static/speaker_icon.png" alt="Speaking">`;
         
+        console.log("Sending text for speech synthesis...");
+        
         // Call the backend to generate speech
-        let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/speak", {
+        let response = await fetch("/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: lastMessage })
         });
         
         let data = await response.json();
+        console.log("Speech API response:", data);
         
-        if (data.success && data.file) {
+        if (data.success && data.audio_id) {
+          // Create audio URL using the audio_id to access the server endpoint
+          const audioUrl = `/audio/${data.audio_id}`;
+          console.log("Playing audio from:", audioUrl);
+          
           // Create and play audio
-          audioPlayer = new Audio(data.file);
+          audioPlayer = new Audio(audioUrl);
           
           audioPlayer.onended = function() {
+            console.log("Audio playback completed");
             isSpeaking = false;
             speakerBtn.innerHTML = originalIcon;
             audioPlayer = null;
           };
           
-          audioPlayer.onerror = function() {
+          audioPlayer.onerror = function(e) {
+            console.error("Audio error:", e);
+            console.error("Audio error details:", audioPlayer.error);
             isSpeaking = false;
             speakerBtn.innerHTML = originalIcon;
             audioPlayer = null;
-            alert("Error playing audio.");
+            alert("Error playing audio. Check browser console for details.");
           };
           
-          audioPlayer.play();
+          // Start playing
           isSpeaking = true;
+          try {
+            await audioPlayer.play();
+            console.log("Audio playback started successfully");
+          } catch (playError) {
+            console.error("Playback failed:", playError);
+            isSpeaking = false;
+            speakerBtn.innerHTML = originalIcon;
+            alert("Audio playback failed: " + playError.message + ". Check browser autoplay settings.");
+          }
         } else {
+          console.error("Error in speech response:", data);
           speakerBtn.innerHTML = originalIcon;
-          alert("Error generating speech.");
+          alert("Error generating speech: " + (data.error || "Unknown error"));
         }
       } catch (error) {
+        console.error("TTS error:", error);
         isSpeaking = false;
-        alert("Error with text-to-speech: " + error.message);
+        document.getElementById("speakerButton").innerHTML = `<img src="../static/speaker_icon.png" alt="Speaker">`;
+        alert("Failed to fetch: Make sure the server is running and accessible.");
       }
     } else {
       alert("No bot message to speak.");
@@ -380,32 +403,82 @@ async function voiceInput() {
 document.getElementById("uploadButton").addEventListener("click", function () {
   let input = document.createElement("input");
   input.type = "file";
-  input.accept = "image/*";
+  input.accept = "image/*,.pdf,.txt";
   input.onchange = async function () {
     let file = input.files[0];
     if (!file) return;
 
     let formData = new FormData();
-    formData.append("image", file);
-
+    
+    // Show upload indicator
+    let uploadBtn = document.getElementById("uploadButton");
+    let originalText = uploadBtn.textContent;
+    uploadBtn.textContent = "Uploading...";
+    uploadBtn.disabled = true;
+    
     try {
-      let response = await fetch("https://financial-ai-advisor-bot-1.onrender.com/upload", {
-        method: "POST",
-        body: formData
-      });
+      // Handle different types of uploads
+      if (file.type.startsWith("image/")) {
+        console.log("Uploading image for analysis");
+        formData.append("image", file);
+        
+        let response = await fetch("/analyze_graph", {
+          method: "POST",
+          body: formData
+        });
 
-      let data = await response.json();
-      let chatbox = document.getElementById("chatbox");
-
-      if (data.response) {
-        chatbox.innerHTML += `<p class='botText'><span>${data.response}</span></p>`;
+        let data = await response.json();
+        
+        // Create bot message to display response
+        let chatbox = document.getElementById("chatbox");
+        let botMessageP = document.createElement('p');
+        botMessageP.className = 'botText';
+        let botMessageSpan = document.createElement('span');
+        
+        if (data.response) {
+          botMessageSpan.innerHTML = data.response.replace(/\n/g, "<br>");
+        } else {
+          botMessageSpan.textContent = "Error processing image";
+        }
+        
+        botMessageP.appendChild(botMessageSpan);
+        chatbox.appendChild(botMessageP);
+        chatbox.scrollTop = chatbox.scrollHeight;
       } else {
-        chatbox.innerHTML += `<p class='botText'><span>Error processing image</span></p>`;
+        // Handle document uploads
+        console.log("Uploading document for context");
+        formData.append("file", file);
+        
+        let response = await fetch("/upload", {
+          method: "POST",
+          body: formData
+        });
+        
+        let data = await response.json();
+        
+        // Create bot message to confirm upload
+        let chatbox = document.getElementById("chatbox");
+        let botMessageP = document.createElement('p');
+        botMessageP.className = 'botText';
+        let botMessageSpan = document.createElement('span');
+        
+        if (data.message) {
+          botMessageSpan.textContent = data.message + " You can now ask me questions about the document.";
+        } else {
+          botMessageSpan.textContent = data.error || "Error uploading document";
+        }
+        
+        botMessageP.appendChild(botMessageSpan);
+        chatbox.appendChild(botMessageP);
+        chatbox.scrollTop = chatbox.scrollHeight;
       }
-      
-      chatbox.scrollTop = chatbox.scrollHeight;
     } catch (error) {
-      alert("Error uploading image.");
+      console.error("Upload error:", error);
+      alert("Error uploading file: " + error.message);
+    } finally {
+      // Reset upload button
+      uploadBtn.textContent = originalText;
+      uploadBtn.disabled = false;
     }
   };
 
