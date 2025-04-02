@@ -88,28 +88,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentTheme = localStorage.getItem("theme");
     if (currentTheme === "dark") {
         document.body.classList.add("dark-mode");
-        document.getElementById("themeToggle").checked = true;
-        if (document.getElementById("themeToggleMobile")) {
-            document.getElementById("themeToggleMobile").checked = true;
-        }
     }
 
     // Theme toggle functionality
-    const themeToggle = document.getElementById("themeToggle");
-    const themeToggleMobile = document.getElementById("themeToggleMobile");
     const themeToggleSidebar = document.querySelector(".theme-toggle-sidebar");
-    
-    if (themeToggle) {
-        themeToggle.addEventListener("change", function() {
-            toggleTheme();
-        });
-    }
-    
-    if (themeToggleMobile) {
-        themeToggleMobile.addEventListener("change", function() {
-            toggleTheme();
-        });
-    }
     
     if (themeToggleSidebar) {
         themeToggleSidebar.addEventListener("click", function() {
@@ -121,22 +103,27 @@ document.addEventListener("DOMContentLoaded", function () {
         if (document.body.classList.contains("dark-mode")) {
             document.body.classList.remove("dark-mode");
             localStorage.setItem("theme", "light");
-            if (themeToggle) themeToggle.checked = false;
-            if (themeToggleMobile) themeToggleMobile.checked = false;
             if (themeToggleSidebar) {
                 themeToggleSidebar.querySelector("i").classList.remove("fa-sun");
                 themeToggleSidebar.querySelector("i").classList.add("fa-moon");
+                themeToggleSidebar.querySelector("span").textContent = "Dark Mode";
             }
         } else {
             document.body.classList.add("dark-mode");
             localStorage.setItem("theme", "dark");
-            if (themeToggle) themeToggle.checked = true;
-            if (themeToggleMobile) themeToggleMobile.checked = true;
             if (themeToggleSidebar) {
                 themeToggleSidebar.querySelector("i").classList.remove("fa-moon");
                 themeToggleSidebar.querySelector("i").classList.add("fa-sun");
+                themeToggleSidebar.querySelector("span").textContent = "Light Mode";
             }
         }
+    }
+
+    // Update theme toggle icon based on current theme
+    if (currentTheme === "dark" && themeToggleSidebar) {
+        themeToggleSidebar.querySelector("i").classList.remove("fa-moon");
+        themeToggleSidebar.querySelector("i").classList.add("fa-sun");
+        themeToggleSidebar.querySelector("span").textContent = "Light Mode";
     }
 
     // Sidebar toggle for mobile view

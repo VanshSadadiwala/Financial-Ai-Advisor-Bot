@@ -308,23 +308,30 @@ input:checked+.slider:before {
 
 .theme-toggle-sidebar {
     cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 5px;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    color: rgba(255, 255, 255, 0.6);
-    transition: all 0.3s;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.05);
+    margin: 0 1rem;
+    transition: all 0.3s ease;
 }
 
 .theme-toggle-sidebar:hover {
     color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .theme-toggle-sidebar i {
-    font-size: 1.2rem;
-    margin-bottom: 0.3rem;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+}
+
+.theme-toggle-sidebar span {
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 /* Adjust main content to work with sidebar */
@@ -1872,4 +1879,91 @@ a.btn {
     color: var(--text-color);
     opacity: 0.6;
     font-style: italic;
+}
+
+/* About page styles */
+.mission-card {
+    border-left: 4px solid var(--primary-color);
+    transition: transform 0.3s ease;
+}
+
+.mission-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.team-member-card {
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.team-member-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.member-avatar {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.team-member-card:hover .member-avatar {
+    transform: scale(1.1);
+}
+
+.member-skills {
+    margin: 10px 0;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: rgba(95, 153, 174, 0.1) !important;
+    color: var(--primary-color) !important;
+    margin-right: 5px;
+}
+
+.social-links {
+    margin-top: 10px;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    color: #666;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Dark mode adjustments for about page */
+body.dark-mode .mission-card {
+    background-color: #1e2130;
+}
+
+body.dark-mode .team-member-card {
+    background-color: #1e2130;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .badge {
+    background-color: rgba(95, 153, 174, 0.2) !important;
+}
+
+body.dark-mode .social-link {
+    background-color: #2a2e3b;
+    color: #bbb;
 }
