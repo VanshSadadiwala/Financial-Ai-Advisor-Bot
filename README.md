@@ -63,10 +63,9 @@ With our AI-driven advisory tool, we aim to:
 
 - **Frontend**: HTML, CSS, JavaScript, Bootstrap
 - **Backend**: Python-Flask
-- **Database**: PostgreSQL
 - **Data Source**: Various financial APIs
 - **AI Tools**: TensorFlow, scikit-learn
-- **Hosting**: AWS (Frontend and Backend)
+- **Hosting**: Render (Backend), Vercel (Frontend)
 
 ---
 
