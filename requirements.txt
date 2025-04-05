@@ -7,5 +7,6 @@ pypdf2
 pytesseract
 opencv-python-headless
 numpy
+pandas
 gunicorn
 gtts
