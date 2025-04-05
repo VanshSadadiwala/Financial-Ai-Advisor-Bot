@@ -11,5 +11,5 @@ pandas
 gunicorn
 gtts
 prophet
-sklearn
+scikit-learn
 plotly
