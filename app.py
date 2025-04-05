@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from prophet import Prophet
 from sklearn.preprocessing import MinMaxScaler
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable Cross-Origin Resource Sharing
@@ -316,4 +317,4 @@ def get_stock_forecast():
         return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=False)
