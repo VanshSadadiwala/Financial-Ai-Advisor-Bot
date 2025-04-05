@@ -488,10 +488,36 @@
         }
 
         .error-message {
-            color: #ff4444;
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px auto;
             text-align: center;
-            padding: 20px;
-            font-size: 1.1em;
+            max-width: 80%;
+            font-size: 14px;
+            display: none;
+            animation: fade-in 0.3s ease-in-out;
+            border-left: 4px solid #ff3333;
+        }
+        
+        .error-message.active {
+            display: block;
+        }
+        
+        .error-message .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: -2px;
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Updated Media Queries for better responsiveness */
@@ -866,8 +892,14 @@
 
     <!-- Main content area -->
     <div class="search-container" id="mainSearchContainer">
-        <input type="text" id="stockInput" placeholder="Enter company name or ticker">
+        <input type="text" id="stockInput" placeholder="Enter company name or ticker symbol...">
         <i class="fas fa-search search-icon"></i>
+    </div>
+    
+    <!-- Error message container -->
+    <div class="error-message" id="errorMessage">
+        <button class="close-btn">&times;</button>
+        <span id="errorText">Error message text</span>
     </div>
 
     <!-- Stock Analysis Container -->
@@ -1010,6 +1042,12 @@
             const stockInput = document.getElementById('stockInput');
             const forecastInput = document.getElementById('forecastInput');
             let mainChart, volumeChart, trendChart, rangeChart, forecastChart;
+
+            // Add error message close button handler
+            const closeBtn = document.querySelector('.error-message .close-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', hideError);
+            }
 
             // Initialize all charts
             function initializeCharts() {
@@ -1516,18 +1554,42 @@
             //-------------------------UPDATE DATA OF THE CHARTS-----------------
             // Function to fetch and update data
             async function fetchAndUpdateData(symbol, duration) {
+                let retries = 3; // Number of retry attempts
+                
                 try {
+                    hideError(); // Hide any previous error
                     document.querySelector('.loading').classList.add('active');
                     
-                    let url = `http://127.0.0.1:5000/stock-data?symbol=${symbol}&duration=${duration}`;
+                    let url = `/stock-data?symbol=${symbol}&duration=${duration}`;
                     
-                    const response = await fetch(url);
-                    const jsonData = await response.json();
+                    let response;
+                    let jsonData;
+                    
+                    // Retry logic
+                    while (retries > 0) {
+                        try {
+                            response = await fetch(url);
+                            if (response.ok) {
+                                jsonData = await response.json();
+                                break; // Success, exit retry loop
+                            } else {
+                                console.warn(`Request failed with status ${response.status}, retries left: ${retries-1}`);
+                                retries--;
+                                if (retries === 0) throw new Error(`Server returned ${response.status}`);
+                                await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
+                            }
+                        } catch (fetchError) {
+                            console.warn(`Fetch error: ${fetchError.message}, retries left: ${retries-1}`);
+                            retries--;
+                            if (retries === 0) throw fetchError;
+                            await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
+                        }
+                    }
 
                     document.querySelector('.loading').classList.remove('active');
 
                     if (!jsonData || jsonData.error) {
-                        alert(jsonData.error || 'Invalid data received from server.');
+                        showError(jsonData?.error || 'Invalid data received from server.');
                         return;
                     }
 
@@ -1592,36 +1654,62 @@
 
                 } catch (error) {
                     console.error('Error fetching data:', error);
-                    alert('An error occurred while fetching data.');
+                    showError('An error occurred while fetching data.');
                 }
             }
 
 
             // Function to fetch and update forecast data
             async function fetchAndUpdateForecastData(symbol, duration) {
+                let retries = 3; // Number of retry attempts
+                
                 try {
+                    // Hide any previous error
+                    hideError();
+                    
                     // Show loading container and update progress
                     const loadingContainer = document.getElementById('loadingContainer');
                     loadingContainer.style.display = 'block';
                     updateProgress(10, 'Starting');
 
-                    // Construct URL and fetch data
-                    const url = `http://127.0.0.1:5000/forecast?symbol=${encodeURIComponent(symbol)}&duration=${encodeURIComponent(duration)}`;
+                    // Construct URL
+                    const url = `/forecast?symbol=${encodeURIComponent(symbol)}&duration=${encodeURIComponent(duration)}`;
                     console.log('Fetching from:', url);
-                    updateProgress(30, 'Data fetching');
                     
-                    const response = await fetch(url);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                    let response;
+                    let data;
+                    
+                    // Retry logic
+                    while (retries > 0) {
+                        try {
+                            updateProgress(30, `Data fetching (attempt ${4-retries}/3)`);
+                            response = await fetch(url);
+                            
+                            if (response.ok) {
+                                updateProgress(50, 'Data received');
+                                data = await response.json();
+                                if (!data || data.error) {
+                                    throw new Error(data?.error || 'Invalid data received');
+                                }
+                                break; // Success, exit retry loop
+                            } else {
+                                console.warn(`Request failed with status ${response.status}, retries left: ${retries-1}`);
+                                retries--;
+                                if (retries === 0) {
+                                    const errorText = await response.text();
+                                    throw new Error(`Server error (${response.status}): ${errorText}`);
+                                }
+                                await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
+                            }
+                        } catch (fetchError) {
+                            console.warn(`Fetch error: ${fetchError.message}, retries left: ${retries-1}`);
+                            retries--;
+                            if (retries === 0) throw fetchError;
+                            await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
+                        }
                     }
-                    updateProgress(50, 'Data received');
-
-                    const data = await response.json();
-                    if (!data || data.error) {
-                        throw new Error(data.error || 'Invalid data received');
-                    }
-                    updateProgress(70, 'Data parsed');
-
+                    
+                    updateProgress(70, 'Processing data');
                     console.log('Received data:', data);
 
                     // Process historical data
@@ -1666,7 +1754,7 @@
                     
                 } catch (error) {
                     console.error('Error fetching forecast data:', error);
-                    alert('Error: ' + error.message);
+                    showError('Error: ' + error.message);
                     document.getElementById('loadingContainer').style.display = 'none';
                 }
             }
@@ -1846,6 +1934,33 @@
             } catch (error) {
                 console.error('Error fetching news:', error);
                 document.querySelector('.news-grid').innerHTML = '<p class="error-message">Failed to load news. Please try again later.</p>';
+            }
+        }
+
+        // Function to show error message
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            const errorTextElement = document.getElementById('errorText');
+            
+            if (errorElement && errorTextElement) {
+                errorTextElement.textContent = message;
+                errorElement.classList.add('active');
+                
+                // Auto hide after 10 seconds
+                setTimeout(() => {
+                    errorElement.classList.remove('active');
+                }, 10000);
+            } else {
+                // Fallback to alert if elements not found
+                alert(message);
+            }
+        }
+        
+        // Function to hide error message
+        function hideError() {
+            const errorElement = document.getElementById('errorMessage');
+            if (errorElement) {
+                errorElement.classList.remove('active');
             }
         }
     </script>
