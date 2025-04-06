@@ -11,5 +11,7 @@ pandas
 gunicorn
 gtts
 prophet
+requests
 scikit-learn
 plotly
+vercel-python-wsgi==0.1.2
