@@ -9,12 +9,18 @@ import pandas as pd
 import numpy as np
 from prophet import Prophet
 from sklearn.preprocessing import MinMaxScaler
+import logging
 
 app = Flask(__name__)
-CORS(app)  # Enable Cross-Origin Resource Sharing
+# Enable more comprehensive CORS
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Replace this with your Alpha Vantage API Key
-API_KEY = "VT7LTAGSWHQY4O7O"
+API_KEY = os.environ.get("ALPHA_VANTAGE_API_KEY", "VT7LTAGSWHQY4O7O")
 
 # Initialize a deque to store request times
 request_times = deque(maxlen=25)
@@ -40,7 +46,10 @@ def get_stock_data():
     symbol = request.args.get("symbol", "").upper()
     duration = request.args.get("duration", "")
 
+    logger.info(f"Stock data request - Symbol: {symbol}, Duration: {duration}")
+
     if not symbol or not duration:
+        logger.warning("Missing parameters in stock-data request")
         return jsonify({"error": "Invalid company symbol or duration"}), 400
 
     # Determine API endpoint and key for different durations
@@ -57,39 +66,56 @@ def get_stock_data():
         url = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey={API_KEY}"
         time_series_key = "Monthly Time Series"
     else:
+        logger.warning(f"Invalid duration parameter: {duration}")
         return jsonify({"error": "Invalid duration parameter"}), 400
 
-    response = requests.get(url)
-    if response.status_code != 200:
-        return jsonify({"error": f"Failed to fetch stock data: {response.text}"}), 500
+    try:
+        logger.info(f"Making API request to Alpha Vantage: {url}")
+        response = requests.get(url, timeout=15)  # Add timeout
+        logger.info(f"Alpha Vantage response status: {response.status_code}")
+        
+        if response.status_code != 200:
+            logger.error(f"API Error: {response.text}")
+            return jsonify({"error": f"Failed to fetch stock data: {response.text}"}), 500
 
-    data = response.json()
+        data = response.json()
 
-    # Check for API errors
-    if "Error Message" in data:
-        return jsonify({"error": data["Error Message"]}), 400
-    if "Note" in data:
-        return jsonify({"error": data["Note"]}), 429
+        # Check for API errors
+        if "Error Message" in data:
+            logger.error(f"Alpha Vantage error: {data['Error Message']}")
+            return jsonify({"error": data["Error Message"]}), 400
+        if "Note" in data:
+            logger.warning(f"Alpha Vantage rate limit note: {data['Note']}")
+            return jsonify({"error": data["Note"]}), 429
 
-    # Extract time series data
-    if time_series_key not in data:
-        return jsonify({"error": "Time series data not found"}), 500
+        # Extract time series data
+        if time_series_key not in data:
+            logger.error(f"Time series key not found. Available keys: {list(data.keys())}")
+            return jsonify({"error": "Time series data not found"}), 500
 
-    time_series_data = data[time_series_key]
+        time_series_data = data[time_series_key]
+        logger.info(f"Successfully fetched {len(time_series_data)} data points")
 
-    # Format the response into a list
-    formatted_data = []
-    for datetime, values in time_series_data.items():
-        formatted_data.append({
-            "datetime": datetime,
-            "open": values["1. open"],
-            "high": values["2. high"],
-            "low": values["3. low"],
-            "close": values["4. close"],
-            "volume": values["5. volume"]
-        })
+        # Format the response into a list
+        formatted_data = []
+        for datetime, values in time_series_data.items():
+            formatted_data.append({
+                "datetime": datetime,
+                "open": values["1. open"],
+                "high": values["2. high"],
+                "low": values["3. low"],
+                "close": values["4. close"],
+                "volume": values["5. volume"]
+            })
 
-    return jsonify(formatted_data)
+        return jsonify(formatted_data)
+        
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request exception: {str(e)}")
+        return jsonify({"error": f"Network error fetching data: {str(e)}"}), 500
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 
 @app.route('/forecast', methods=['GET'])
 def forecast():
