@@ -10,17 +10,24 @@ import numpy as np
 from prophet import Prophet
 from sklearn.preprocessing import MinMaxScaler
 import logging
-
-app = Flask(__name__)
-# Enable more comprehensive CORS
-CORS(app, resources={r"/*": {"origins": "*"}})
+import sys
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout
+)
 logger = logging.getLogger(__name__)
 
-# Replace this with your Alpha Vantage API Key
+app = Flask(__name__)
+
+# Enable comprehensive CORS with all origins and methods
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"]}})
+
+# Get API key from environment with fallback
 API_KEY = os.environ.get("ALPHA_VANTAGE_API_KEY", "VT7LTAGSWHQY4O7O")
+logger.info(f"Using Alpha Vantage API key: {'*' * len(API_KEY[:-4])} + {API_KEY[-4:]}")
 
 # Initialize a deque to store request times
 request_times = deque(maxlen=25)
@@ -36,6 +43,23 @@ def can_make_request():
         request_times.append(current_time)
         return True
     return False
+
+# Function to convert duration string to pandas frequency string
+def convert_duration_to_freq(duration):
+    """Convert duration string to pandas frequency string"""
+    if duration in ['1min', '5min', '15min', '30min', '60min']:
+        # Convert '1min' to '1T', '5min' to '5T', etc.
+        return duration.replace('min', 'T')
+    elif duration == '1day':
+        return 'D'  # Daily frequency
+    elif duration == '1week':
+        return 'W'  # Weekly frequency
+    elif duration == '1month':
+        return 'MS'  # Month start frequency
+    else:
+        # Default to daily if unknown
+        logger.warning(f"Unknown duration format: {duration}, defaulting to daily")
+        return 'D'
 
 @app.route("/")
 def home():
@@ -266,7 +290,7 @@ def forecast():
             future_dates = pd.date_range(
                 start=last_historical_date,
                 periods=forecast_periods + 1,  # +1 to include the last historical date
-                freq=duration.replace('min', 'T')  # Convert '1min' to '1T', '5min' to '5T', etc.
+                freq=convert_duration_to_freq(duration)  # Use the helper function
             )
             
             # Convert to DataFrame and format for Prophet
