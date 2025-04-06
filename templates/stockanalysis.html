@@ -488,36 +488,10 @@
         }
 
         .error-message {
-            background-color: rgba(255, 0, 0, 0.2);
-            color: #ff6b6b;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px auto;
+            color: #ff4444;
             text-align: center;
-            max-width: 80%;
-            font-size: 14px;
-            display: none;
-            animation: fade-in 0.3s ease-in-out;
-            border-left: 4px solid #ff3333;
-        }
-        
-        .error-message.active {
-            display: block;
-        }
-        
-        .error-message .close-btn {
-            float: right;
-            background: none;
-            border: none;
-            color: #ff6b6b;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: -2px;
-        }
-        
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            padding: 20px;
+            font-size: 1.1em;
         }
 
         /* Updated Media Queries for better responsiveness */
@@ -869,9 +843,9 @@
             <h1 class="nav-title" id="navTitle">Stock Analysis Dashboard</h1>
         </div>
         <div class="nav-right">
-            <button class="back-btn">
-                <i class="fas fa-arrow-left"></i> <a href="../index.html" style="text-decoration: none; color: inherit;">Back to Website</a>
-            </button>
+            <a href="../index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Website
+            </a>
         </div>
     </nav>
 
@@ -892,14 +866,8 @@
 
     <!-- Main content area -->
     <div class="search-container" id="mainSearchContainer">
-        <input type="text" id="stockInput" placeholder="Enter company name or ticker symbol...">
+        <input type="text" id="stockInput" placeholder="Enter company name or ticker">
         <i class="fas fa-search search-icon"></i>
-    </div>
-    
-    <!-- Error message container -->
-    <div class="error-message" id="errorMessage">
-        <button class="close-btn">&times;</button>
-        <span id="errorText">Error message text</span>
     </div>
 
     <!-- Stock Analysis Container -->
@@ -978,14 +946,12 @@
         </div>
 
         <div class="forecast-buttons">
-            <button data-interval="1min" onclick="updateTimeframe('1min')">1 Hour</button>
-            <button data-interval="5min" onclick="updateTimeframe('15min')">1 Day</button>
-            <button data-interval="60min" onclick="updateTimeframe('60min')">5 Days</button>
-            <button data-interval="1day" onclick="updateTimeframe('1day')">1 Month</button>
-            <button data-interval="1week" onclick="updateTimeframe('1week')">6 Months</button>
-            <button data-interval="1week" onclick="updateTimeframe('1week', null, '1year')">1 Year</button>
-            <button data-interval="1month" onclick="updateTimeframe('1month', null, '4year')">4 Years</button>
-            <button data-interval="1month" onclick="updateTimeframe('1month', null, '8year')">8 Years</button>
+            <button data-interval="1min">1 Hour</button>
+            <button data-interval="5min">1 Day</button>
+            <button data-interval="60min">5 Days</button>
+            <button data-interval="1day">1 Month</button>
+            <button data-interval="1week">6 Months</button>
+            <button data-interval="1month">1 Year</button>
         </div>
         
         <div class="chart-container">
@@ -1042,12 +1008,6 @@
             const stockInput = document.getElementById('stockInput');
             const forecastInput = document.getElementById('forecastInput');
             let mainChart, volumeChart, trendChart, rangeChart, forecastChart;
-
-            // Add error message close button handler
-            const closeBtn = document.querySelector('.error-message .close-btn');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', hideError);
-            }
 
             // Initialize all charts
             function initializeCharts() {
@@ -1262,6 +1222,7 @@
                             data: [],
                             backgroundColor: '#00FFFF',
                             borderColor: '#FFFFFF',
+                            pointRadius: 0,
                             borderWidth: 1
                         }],
                     },
@@ -1312,81 +1273,69 @@
                 });
             }
 
-            // Initialize Forecast Chart
+            // Initialize forecast chart
             function initializeForecastChart() {
-                const ctx = document.getElementById('forecastChart').getContext('2d');
-                forecastChart = new Chart(ctx, {
+                const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+                forecastChart = new Chart(forecastCtx, {
                     type: 'line',
                     data: {
                         datasets: [{
-                                label: 'Historical Price',
+                            label: 'Historical Price',
                             data: [],
-                            borderColor: 'rgba(0, 255, 204, 0.8)',
-                            backgroundColor: 'rgba(0, 255, 204, 0.1)',
-                            borderWidth: 1.5,
-                            pointRadius: 0,
-                            order: 2,
-                            fill: false
-                        }, {
-                                label: 'Forecasted Price',
-                            data: [],
-                            borderColor: 'rgba(255, 105, 180, 1)',
-                            backgroundColor: 'rgba(255, 105, 180, 0.1)',
-                            borderWidth: 2.5,
-                            pointRadius: 0,
-                            order: 1,
+                            borderColor: 'rgb(0, 255, 255)',
+                            backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 1,
+                            pointHoverRadius: 5,
                             fill: false,
-                            borderDash: [5, 5]
+                            tension: 0.1
+                        }, {
+                            label: 'Forecasted Price',
+                            data: [],
+                            borderColor: 'rgb(255, 0, 255)',
+                            backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 1,
+                            pointHoverRadius: 5,
+                            fill: false,
+                            tension: 0.1
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        animation: {
-                            duration: 0
-                        },
                         interaction: {
-                            mode: 'nearest',
-                            axis: 'x',
+                            mode: 'index',
                             intersect: false
                         },
                         plugins: {
-                            legend: {
-                                display: true,
-                                labels: {
-                                    color: '#e1e1e1',
-                                    usePointStyle: true,
-                                    padding: 20,
-                                    font: { size: 12 }
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('en-US', { 
+                                                style: 'currency', 
+                                                currency: 'USD' 
+                                            }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
                                 }
                             },
-                            tooltip: {
-                                enabled: true,
-                                mode: 'nearest',
-                            intersect: false,
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                titleColor: '#fff',
-                                bodyColor: '#fff',
-                                padding: 10,
-                                displayColors: true,
-                                callbacks: {
-                                    title: function(tooltipItems) {
-                                        return new Date(tooltipItems[0].raw.x).toLocaleString();
-                                    },
-                                    label: function(context) {
-                                        const price = context.raw.y;
-                                        const formattedPrice = new Intl.NumberFormat('en-US', {
-                                            style: 'currency',
-                                            currency: 'USD'
-                                        }).format(price);
-
-                                        if (context.datasetIndex === 1) {
-                                            const historicalData = context.chart.data.datasets[0].data;
-                                            const lastHistoricalPrice = historicalData[historicalData.length - 1].y;
-                                            const change = ((price - lastHistoricalPrice) / lastHistoricalPrice) * 100;
-                                            return `${context.dataset.label}: ${formattedPrice} (${change >= 0 ? '+' : ''}${change.toFixed(2)}%)`;
-                                        }
-                                        return `${context.dataset.label}: ${formattedPrice}`;
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: '#ffffff',
+                                    font: {
+                                        size: 12
                                     }
                                 }
                             }
@@ -1395,51 +1344,44 @@
                             x: {
                                 type: 'time',
                                 time: {
-                                    parser: 'yyyy-MM-dd HH:mm:ss',
-                                    unit: 'hour',
+                                    unit: 'minute',
                                     displayFormats: {
-                                        millisecond: 'HH:mm:ss.SSS',
-                                        second: 'HH:mm:ss',
                                         minute: 'HH:mm',
                                         hour: 'HH:mm',
                                         day: 'MMM d',
                                         week: 'MMM d',
-                                        month: 'MMM yyyy',
-                                        quarter: 'MMM yyyy',
-                                        year: 'yyyy'
+                                        month: 'MMM yyyy'
                                     }
                                 },
                                 grid: {
-                                    display: true,
                                     color: 'rgba(255, 255, 255, 0.1)'
                                 },
                                 ticks: {
-                                    source: 'auto',
+                                    color: '#ffffff',
                                     maxRotation: 0,
-                                    color: '#e1e1e1',
                                     autoSkip: true,
                                     maxTicksLimit: 10
-                                    }
+                                }
                             },
                             y: {
-                                position: 'left',
                                 grid: {
                                     color: 'rgba(255, 255, 255, 0.1)'
                                 },
                                 ticks: {
-                                    color: '#e1e1e1',
-                                    callback: value => new Intl.NumberFormat('en-US', {
-                                                style: 'currency', 
-                                        currency: 'USD'
-                                    }).format(value)
-                                        }
+                                    color: '#ffffff',
+                                    callback: function(value) {
+                                        return new Intl.NumberFormat('en-US', { 
+                                            style: 'currency', 
+                                            currency: 'USD' 
+                                        }).format(value);
                                     }
                                 }
                             }
+                        }
+                    }
                 });
-                return forecastChart;
             }
-            
+
             // Initialize all charts
             initializeCharts();
             initializeForecastChart();
@@ -1554,42 +1496,18 @@
             //-------------------------UPDATE DATA OF THE CHARTS-----------------
             // Function to fetch and update data
             async function fetchAndUpdateData(symbol, duration) {
-                let retries = 3; // Number of retry attempts
-                
                 try {
-                    hideError(); // Hide any previous error
                     document.querySelector('.loading').classList.add('active');
                     
-                    let url = `/stock-data?symbol=${symbol}&duration=${duration}`;
+                    let url = `http://127.0.0.1:8080/stock-data?symbol=${symbol}&duration=${duration}`;
                     
-                    let response;
-                    let jsonData;
-                    
-                    // Retry logic
-                    while (retries > 0) {
-                        try {
-                            response = await fetch(url);
-                            if (response.ok) {
-                                jsonData = await response.json();
-                                break; // Success, exit retry loop
-                            } else {
-                                console.warn(`Request failed with status ${response.status}, retries left: ${retries-1}`);
-                                retries--;
-                                if (retries === 0) throw new Error(`Server returned ${response.status}`);
-                                await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
-                            }
-                        } catch (fetchError) {
-                            console.warn(`Fetch error: ${fetchError.message}, retries left: ${retries-1}`);
-                            retries--;
-                            if (retries === 0) throw fetchError;
-                            await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
-                        }
-                    }
+                    const response = await fetch(url);
+                    const jsonData = await response.json();
 
                     document.querySelector('.loading').classList.remove('active');
 
                     if (!jsonData || jsonData.error) {
-                        showError(jsonData?.error || 'Invalid data received from server.');
+                        alert(jsonData.error || 'Invalid data received from server.');
                         return;
                     }
 
@@ -1654,62 +1572,36 @@
 
                 } catch (error) {
                     console.error('Error fetching data:', error);
-                    showError('An error occurred while fetching data.');
+                    alert('An error occurred while fetching data.');
                 }
             }
 
 
             // Function to fetch and update forecast data
             async function fetchAndUpdateForecastData(symbol, duration) {
-                let retries = 3; // Number of retry attempts
-                
                 try {
-                    // Hide any previous error
-                    hideError();
-                    
                     // Show loading container and update progress
                     const loadingContainer = document.getElementById('loadingContainer');
                     loadingContainer.style.display = 'block';
                     updateProgress(10, 'Starting');
 
-                    // Construct URL
-                    const url = `/forecast?symbol=${encodeURIComponent(symbol)}&duration=${encodeURIComponent(duration)}`;
+                    // Construct URL and fetch data
+                    const url = `http://127.0.0.1:8080/forecast?symbol=${encodeURIComponent(symbol)}&duration=${encodeURIComponent(duration)}`;
                     console.log('Fetching from:', url);
+                    updateProgress(30, 'Data fetching');
                     
-                    let response;
-                    let data;
-                    
-                    // Retry logic
-                    while (retries > 0) {
-                        try {
-                            updateProgress(30, `Data fetching (attempt ${4-retries}/3)`);
-                            response = await fetch(url);
-                            
-                            if (response.ok) {
-                                updateProgress(50, 'Data received');
-                                data = await response.json();
-                                if (!data || data.error) {
-                                    throw new Error(data?.error || 'Invalid data received');
-                                }
-                                break; // Success, exit retry loop
-                            } else {
-                                console.warn(`Request failed with status ${response.status}, retries left: ${retries-1}`);
-                                retries--;
-                                if (retries === 0) {
-                                    const errorText = await response.text();
-                                    throw new Error(`Server error (${response.status}): ${errorText}`);
-                                }
-                                await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
-                            }
-                        } catch (fetchError) {
-                            console.warn(`Fetch error: ${fetchError.message}, retries left: ${retries-1}`);
-                            retries--;
-                            if (retries === 0) throw fetchError;
-                            await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
-                        }
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    
-                    updateProgress(70, 'Processing data');
+                    updateProgress(50, 'Data received');
+
+                    const data = await response.json();
+                    if (!data || data.error) {
+                        throw new Error(data.error || 'Invalid data received');
+                    }
+                    updateProgress(70, 'Data parsed');
+
                     console.log('Received data:', data);
 
                     // Process historical data
@@ -1754,7 +1646,7 @@
                     
                 } catch (error) {
                     console.error('Error fetching forecast data:', error);
-                    showError('Error: ' + error.message);
+                    alert('Error: ' + error.message);
                     document.getElementById('loadingContainer').style.display = 'none';
                 }
             }
@@ -1781,116 +1673,142 @@
                 }
             }
             
-            // Function to update the forecast chart with historical and forecast data
-            async function updateForecastChartWithData(historicalDates, historicalPrices, forecastData) {
-                console.log('Processing data for chart update:', {
-                    historicalDates: historicalDates.length,
-                    historicalPrices: historicalPrices.length,
-                    forecastData: forecastData.length
-                });
-
-                // Convert historical data
-                const historicalPoints = historicalDates.map((date, i) => ({
-                    x: new Date(date).toISOString(),
-                    y: historicalPrices[i]
-                }));
-
-                // Convert and process forecast data
-                const forecastPoints = forecastData.map(item => ({
-                    x: new Date(item.datetime).toISOString(),
-                    y: item.close
-                }));
+            // Helper function to determine appropriate time unit
+            function getTimeUnit(startTime, endTime) {
+                const duration = endTime - startTime;
+                const hours = duration / (1000 * 60 * 60);
                 
-                console.log('Converted data points:', {
-                    historical: historicalPoints.slice(0, 2),
-                    forecast: forecastPoints.slice(0, 2)
-                });
+                if (hours <= 1) return 'minute';
+                if (hours <= 24) return 'hour';
+                if (hours <= 24 * 7) return 'day';
+                if (hours <= 24 * 30) return 'week';
+                return 'month';
+            }
 
-                // Sort all points by time
-                historicalPoints.sort((a, b) => new Date(a.x) - new Date(b.x));
-                forecastPoints.sort((a, b) => new Date(a.x) - new Date(b.x));
-
-                // Calculate time difference for x-axis unit
-                const timeSpan = new Date(forecastPoints[forecastPoints.length - 1].x) - new Date(historicalPoints[0].x);
-                const timeUnit = timeSpan < 86400000 ? 'hour' : // less than a day
-                               timeSpan < 604800000 ? 'day' :   // less than a week
-                               timeSpan < 2592000000 ? 'week' : // less than a month
-                               'month';
-
-                // Update chart options for the selected time unit
-                forecastChart.options.scales.x.time.unit = timeUnit;
-
-                // Calculate y-axis range with padding
-                const allPrices = [...historicalPoints.map(p => p.y), ...forecastPoints.map(p => p.y)];
-                const minPrice = Math.min(...allPrices);
-                const maxPrice = Math.max(...allPrices);
-                const padding = (maxPrice - minPrice) * 0.1;
-
-                // Clear existing data
-                forecastChart.data.datasets[0].data = [];
-                forecastChart.data.datasets[1].data = [];
-                
-                // Update chart data
-                forecastChart.data.datasets[0].data = historicalPoints;
-                forecastChart.data.datasets[1].data = forecastPoints;
-
-                // Update y-axis range
-                forecastChart.options.scales.y.min = minPrice - padding;
-                forecastChart.options.scales.y.max = maxPrice + padding;
-
-                // Log the data being set
-                console.log('Setting chart data:', {
-                    historicalPoints: historicalPoints.length,
-                    forecastPoints: forecastPoints.length,
-                    yRange: {
-                        min: minPrice - padding,
-                        max: maxPrice + padding
-                    }
-                });
-
-                // Update chart with animation disabled
-                forecastChart.options.animation = false;
-                await forecastChart.update();
-                forecastChart.options.animation = { duration: 0 };
-
-                // Update stats panel
-                if (forecastPoints.length > 0) {
+            // Helper function to update stats panel
+            function updateStatsPanel(historicalPoints, forecastPoints) {
+                if (forecastPoints.length > 0 && historicalPoints.length > 0) {
                     const lastHistoricalPrice = historicalPoints[historicalPoints.length - 1].y;
                     const lastForecastPrice = forecastPoints[forecastPoints.length - 1].y;
                     const priceChange = lastForecastPrice - lastHistoricalPrice;
                     const percentageChange = (priceChange / lastHistoricalPrice) * 100;
 
+                    // Update predicted price
                     document.getElementById('predictedPrice').textContent = 
                         new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
                             .format(lastForecastPrice);
-                    
+
+                    // Update predicted change
                     const changeElement = document.getElementById('predictedChange');
                     changeElement.textContent = `${percentageChange >= 0 ? '+' : ''}${percentageChange.toFixed(2)}%`;
                     changeElement.style.color = percentageChange >= 0 ? '#00ff00' : '#ff4444';
+
+                    // Update prediction range
+                    const minForecast = Math.min(...forecastPoints.map(p => p.y));
+                    const maxForecast = Math.max(...forecastPoints.map(p => p.y));
+                    document.getElementById('predictionRange').textContent = 
+                        `${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(minForecast)} - ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(maxForecast)}`;
+
+                    // Update confidence level
+                    const avgConfidence = forecastPoints.reduce((sum, point) => sum + (point.confidence || 0.85), 0) / forecastPoints.length;
+                    document.getElementById('confidenceLevel').textContent = `${(avgConfidence * 100).toFixed(1)}%`;
                 }
             }
 
-            // Add this function to handle forecast button clicks
-            function updateForecastTimeframe(duration) {
-                const symbol = document.getElementById('forecastInput').value.trim();
-                if (!symbol) {
-                    alert('Please enter a stock symbol');
-                    return;
+            // Function to update forecast chart with data
+            async function updateForecastChartWithData(historicalDates, historicalPrices, forecastData) {
+                try {
+                    // Validate input data
+                    if (!Array.isArray(historicalDates) || !Array.isArray(historicalPrices) || !Array.isArray(forecastData)) {
+                        console.error('Invalid input data');
+                        return;
+                    }
+
+                    // Convert historical data to points
+                    const historicalPoints = historicalDates
+                        .map((date, i) => ({
+                            x: new Date(date).getTime(),
+                            y: parseFloat(historicalPrices[i])
+                        }))
+                        .filter(point => !isNaN(point.x) && !isNaN(point.y));
+
+                    // Convert forecast data to points
+                    const forecastPoints = forecastData
+                        .map(item => ({
+                            x: new Date(item.datetime).getTime(),
+                            y: parseFloat(item.close),
+                            confidence: item.confidence || 0.85
+                        }))
+                        .filter(point => !isNaN(point.x) && !isNaN(point.y));
+
+                    // Sort points by time
+                    historicalPoints.sort((a, b) => a.x - b.x);
+                    forecastPoints.sort((a, b) => a.x - b.x);
+
+                    // Calculate and log data proportions
+                    const totalPoints = historicalPoints.length + forecastPoints.length;
+                    const historicalProportion = (historicalPoints.length / totalPoints * 100).toFixed(2);
+                    const forecastProportion = (forecastPoints.length / totalPoints * 100).toFixed(2);
+
+                    console.log('Data proportions:', {
+                        historicalPoints: historicalPoints.length,
+                        forecastPoints: forecastPoints.length,
+                        historicalProportion: historicalProportion + '%',
+                        forecastProportion: forecastProportion + '%'
+                    });
+
+                    // Ensure forecast starts from last historical point
+                    const lastHistoricalDate = historicalPoints[historicalPoints.length - 1].x;
+                    const filteredForecastPoints = forecastPoints.filter(point => point.x >= lastHistoricalDate);
+
+                    // Update chart options
+                    forecastChart.options.scales.x.time.unit = getTimeUnit(historicalPoints[0].x, 
+                        filteredForecastPoints[filteredForecastPoints.length - 1].x);
+
+                    // Calculate y-axis range with padding
+                    const allPrices = [...historicalPoints.map(p => p.y), ...filteredForecastPoints.map(p => p.y)];
+                    const minPrice = Math.min(...allPrices);
+                    const maxPrice = Math.max(...allPrices);
+                    const padding = (maxPrice - minPrice) * 0.1;
+
+                    // Update chart options
+                    forecastChart.options.scales.y.min = minPrice - padding;
+                    forecastChart.options.scales.y.max = maxPrice + padding;
+
+                    // Update datasets
+                    forecastChart.data.datasets[0].data = historicalPoints;
+                    forecastChart.data.datasets[1].data = filteredForecastPoints;
+
+                    // Force chart update without animation
+                    forecastChart.update('none');
+
+                    // Update stats panel
+                    updateStatsPanel(historicalPoints, filteredForecastPoints);
+
+                } catch (error) {
+                    console.error('Error updating forecast chart:', error);
                 }
-                fetchAndUpdateForecastData(symbol, duration);
             }
 
             // Update the forecast buttons to use the new function
             document.querySelectorAll('#futureForecastingContainer .forecast-buttons button').forEach(button => {
                 button.addEventListener('click', function() {
                     const duration = this.getAttribute('data-interval');
-                    updateForecastTimeframe(duration);
+                    const symbol = document.getElementById('forecastInput').value.trim();
+                    
+                    if (!symbol) {
+                        alert('Please enter a stock symbol');
+                        return;
+                    }
                     
                     // Update active button state
                     document.querySelectorAll('#futureForecastingContainer .forecast-buttons button').forEach(btn => {
                         btn.classList.remove('active-button');
                     });
                     this.classList.add('active-button');
+                    
+                    // Fetch and update forecast data
+                    fetchAndUpdateForecastData(symbol, duration);
                 });
             });
         });
@@ -1934,33 +1852,6 @@
             } catch (error) {
                 console.error('Error fetching news:', error);
                 document.querySelector('.news-grid').innerHTML = '<p class="error-message">Failed to load news. Please try again later.</p>';
-            }
-        }
-
-        // Function to show error message
-        function showError(message) {
-            const errorElement = document.getElementById('errorMessage');
-            const errorTextElement = document.getElementById('errorText');
-            
-            if (errorElement && errorTextElement) {
-                errorTextElement.textContent = message;
-                errorElement.classList.add('active');
-                
-                // Auto hide after 10 seconds
-                setTimeout(() => {
-                    errorElement.classList.remove('active');
-                }, 10000);
-            } else {
-                // Fallback to alert if elements not found
-                alert(message);
-            }
-        }
-        
-        // Function to hide error message
-        function hideError() {
-            const errorElement = document.getElementById('errorMessage');
-            if (errorElement) {
-                errorElement.classList.remove('active');
             }
         }
     </script>
