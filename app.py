@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import requests
 import time
@@ -39,7 +39,7 @@ def can_make_request():
 
 @app.route("/")
 def home():
-    return "Flask Server is Running!"
+    return render_template("stockanalysis.html")
 
 @app.route("/stock-data", methods=["GET"])
 def get_stock_data():
