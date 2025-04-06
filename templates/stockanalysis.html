@@ -1499,7 +1499,7 @@
                 try {
                     document.querySelector('.loading').classList.add('active');
                     
-                    let url = `http://127.0.0.1:8080/stock-data?symbol=${symbol}&duration=${duration}`;
+                    let url = `/stock-data?symbol=${symbol}&duration=${duration}`;
                     
                     const response = await fetch(url);
                     const jsonData = await response.json();
@@ -1586,7 +1586,7 @@
                     updateProgress(10, 'Starting');
 
                     // Construct URL and fetch data
-                    const url = `http://127.0.0.1:8080/forecast?symbol=${encodeURIComponent(symbol)}&duration=${encodeURIComponent(duration)}`;
+                    const url = `/forecast?symbol=${encodeURIComponent(symbol)}&duration=${encodeURIComponent(duration)}`;
                     console.log('Fetching from:', url);
                     updateProgress(30, 'Data fetching');
                     
