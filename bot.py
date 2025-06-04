@@ -10,15 +10,25 @@ import numpy as np
 from gtts import gTTS
 import os
 import tempfile
+from dotenv import load_dotenv
 
 # ----- Initialization -----
 app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)  # Enable Cross-Origin Resource Sharing for frontend requests
 
-# Configure Gemini AI with Hardcoded API Key
-GEMINI_API_KEY = "AIzaSyCJJm5pBz2wL7C3bmykVDq_8Vo7hLQKBvc"  # Replace with your actual API key
+# Load from .env file (only works locally; Render uses real environment variables)
+load_dotenv()
+
+# Get API key from environment variable
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Safety check
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY is not set in environment variables.")
+
+# Configure Gemini
 genai.configure(api_key=GEMINI_API_KEY)
-chatbot = genai.GenerativeModel("gemini-1.5-pro")
+chatbot = genai.GenerativeModel("gemini-pro")
 
 # Initialize text-to-speech functionality
 def text_to_speech(text):
