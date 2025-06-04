@@ -13,3 +13,4 @@ gtts
 prophet
 scikit-learn
 plotly
+dotenv
